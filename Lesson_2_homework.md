@@ -6,6 +6,19 @@
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_4.png)
 # 2.Настройка подключения по ssh
 *2.1.Добавить свой ssh ключ в metadata ВМ*
+```
+PS C:\Users\Egor> ssh-keygen -t ed25519
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (C:\Users\Egor/.ssh/id_ed25519):
+Created directory 'C:\Users\Egor/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in C:\Users\Egor/.ssh/id_ed25519.
+Your public key has been saved in C:\Users\Egor/.ssh/id_ed25519.pub.
+The key fingerprint is:
+SHA256:6sYFlJmxjDz8fMfYXA1f36X5fB4ZE2HDaFMbQKLPtEc egor@WIN-GRJINGE790V
+PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
+```
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_6.png)
 *2.2.Зайти удаленным ssh (первая сессия), не забывайте про ssh-add*
 ```
