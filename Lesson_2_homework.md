@@ -33,6 +33,11 @@ ssh-rsa@homework2:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt 
 > sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
 Hit:1 http://mirror.yandex.ru/ubuntu jammy InRelease
 ```
+```
+ssh-rsa@homework2:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+```
 # 4.Запуск второй сессии. Создание тестовой таблицы. Отключение autocommit
 *4.1.Зайти вторым ssh (вторая сессия)*
 
