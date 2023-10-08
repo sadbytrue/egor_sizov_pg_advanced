@@ -122,21 +122,62 @@ COMMIT
 ```
 # 6.Эксперимент с уровнем изоляции repeatable read
 *6.1.Начать новые но уже repeatable read транзации - set transaction isolation level repeatable read*
-
+```
+postgres=# set transaction isolation level repeatable read;
+SET
+```
 *6.2.В первой сессии добавить новую запись insert into persons(first_name, second_name) values('sveta', 'svetova')*
-
+```
+postgres=*# insert into persons(first_name, second_name) values('sveta', 'svetova');
+INSERT 0 1
+```
 *6.3.Сделать select * from persons во второй сессии*
-
+```
+postgres=# set transaction isolation level repeatable read;
+SET
+postgres=*# select * from persons;
+ id | first_name | second_name
+----+------------+-------------
+  1 | ivan       | ivanov
+  2 | petr       | petrov
+  3 | sergey     | sergeev
+(3 rows)
+```
 **6.4.Видите ли вы новую запись и если да то почему?**
+Нет, потому что аналогично п. 5.5 транзакция 1 не зафиксирована и данные, INSERT которых в ней сделан "грязные"
 
 *6.5.Завершить первую транзакцию - commit*
-
+```
+postgres=*# COMMIT;
+COMMIT
+```
 *6.6.Сделать select * from persons во второй сессии*
-
+```
+postgres=*# select * from persons;
+ id | first_name | second_name
+----+------------+-------------
+  1 | ivan       | ivanov
+  2 | petr       | petrov
+  3 | sergey     | sergeev
+(3 rows)
+```
 **6.7.Видите ли вы новую запись и если да то почему?**
 
+
 *6.8.Завершить вторую транзакцию*
-
+```
+postgres=*# COMMIT;
+COMMIT
+```
 *6.9.Сделать select * from persons во второй сессии*
-
+```
+postgres=# select * from persons;
+ id | first_name | second_name
+----+------------+-------------
+  1 | ivan       | ivanov
+  2 | petr       | petrov
+  3 | sergey     | sergeev
+  4 | sveta      | svetova
+(4 rows)
+```
 **6.10.Видите ли вы новую запись и если да то почему?**
