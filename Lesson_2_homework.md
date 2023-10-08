@@ -28,7 +28,11 @@ Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-84-generic x86_64)
 ```
 # 3.Установка интсанса PostgreSQL
 *3.1.Поставить PostgreSQL*
-
+```
+ssh-rsa@homework2:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q &&
+> sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
+Hit:1 http://mirror.yandex.ru/ubuntu jammy InRelease
+```
 # 4.Запуск второй сессии. Создание тестовой таблицы. Отключение autocommit
 *4.1.Зайти вторым ssh (вторая сессия)*
 
