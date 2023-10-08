@@ -1,44 +1,62 @@
 **Занятие 2. Домашнее задание**
 # 1.Создание ВМ в Яндекс Облаке
-*Создать новый проект в Google Cloud Platform, Яндекс облако или на любых ВМ, докере*
+*1.1.Создать новый проект в Google Cloud Platform, Яндекс облако или на любых ВМ, докере*
 
-*Далее создать инстанс виртуальной машины с дефолтными параметрами*
+*1.2.Далее создать инстанс виртуальной машины с дефолтными параметрами*
 
 # 2.Настройка подключения по ssh
-*Добавить свой ssh ключ в metadata ВМ*
+*2.1.Добавить свой ssh ключ в metadata ВМ*
 
-*Зайти удаленным ssh (первая сессия), не забывайте про ssh-add*
+*2.2.Зайти удаленным ssh (первая сессия), не забывайте про ssh-add*
 
 # 3.Установка интсанса PostgreSQL
-*Поставить PostgreSQL*
+*3.1.Поставить PostgreSQL*
 
 # 4.Запуск второй сессии. Создание тестовой таблицы. Отключение autocommit
-*Зайти вторым ssh (вторая сессия)*
+*4.1.Зайти вторым ssh (вторая сессия)*
 
-*Запустить везде psql из под пользователя postgres*
+*4.2.Запустить везде psql из под пользователя postgres*
 
-*Выключить auto commit*
+*4.3.Выключить auto commit*
 
-*Сделать в первой сессии новую таблицу и наполнить ее данными create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit*
+*4.4.Сделать в первой сессии новую таблицу и наполнить ее данными create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit*
 
 # 5.Эксперимент с уровнем изоляции по умолчанию
-*Посмотреть текущий уровень изоляции: show transaction isolation level*
+*5.1.Посмотреть текущий уровень изоляции: show transaction isolation level*
 
-*Начать новую транзакцию в обоих сессиях с дефолтным (не меняя) уровнем изоляции*
+*5.2.Начать новую транзакцию в обоих сессиях с дефолтным (не меняя) уровнем изоляции*
 
-*В первой сессии добавить новую запись insert into persons(first_name, second_name) values('sergey', 'sergeev')*
+*5.3.В первой сессии добавить новую запись insert into persons(first_name, second_name) values('sergey', 'sergeev')*
 
-*Cделать select * from persons во второй сессии*
+*5.4.Cделать select * from persons во второй сессии*
 
-*Видите ли вы новую запись и если да то почему?*
+**5.5.Видите ли вы новую запись и если да то почему?**
 
-*Завершить первую транзакцию - commit*
+*5.6.Завершить первую транзакцию - commit*
 
-*Cделать select * from persons во второй сессии*
+*5.7.Cделать select * from persons во второй сессии*
 
-*Видите ли вы новую запись и если да то почему?*
+**5.8.Видите ли вы новую запись и если да то почему?**
 
-*Завершите транзакцию во второй сессии*
+*5.9.Завершите транзакцию во второй сессии*
 
 # 6.Эксперимент с уровнем изоляции repeatable read
+*6.1.Начать новые но уже repeatable read транзации - set transaction isolation level repeatable read*
 
+*6.2.В первой сессии добавить новую запись insert into persons(first_name, second_name) values('sveta', 'svetova')*
+
+*6.3.Сделать select * from persons во второй сессии*
+
+**6.4.Видите ли вы новую запись и если да то почему?**
+
+*6.5.Завершить первую транзакцию - commit*
+
+*6.6.Сделать select * from persons во второй сессии*
+
+**6.7.Видите ли вы новую запись и если да то почему?**
+
+*6.8.Завершить вторую транзакцию*
+
+*6.9.Сделать select * from persons во второй сессии*
+
+**6.10.Видите ли вы новую запись и если да то почему?**
