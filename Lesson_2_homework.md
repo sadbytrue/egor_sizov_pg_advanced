@@ -40,22 +40,59 @@ Ver Cluster Port Status Owner    Data directory              Log file
 ```
 # 4.Запуск второй сессии. Создание тестовой таблицы. Отключение autocommit
 *4.1.Зайти вторым ssh (вторая сессия)*
-
+```
+PS C:\Users\Egor> ssh ssh-rsa@158.160.116.157
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-84-generic x86_64)
+```
 *4.2.Запустить везде psql из под пользователя postgres*
-
+```
+ssh-rsa@homework2:~$ sudo -u postgres psql
+```
 *4.3.Выключить auto commit*
-
+```
+postgres=# \set AUTOCOMMIT OFF
+```
 *4.4.Сделать в первой сессии новую таблицу и наполнить ее данными create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit*
-
+```
+postgres=# create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit;
+CREATE TABLE
+INSERT 0 1
+INSERT 0 1
+COMMIT
+```
 # 5.Эксперимент с уровнем изоляции по умолчанию
 *5.1.Посмотреть текущий уровень изоляции: show transaction isolation level*
+```
+postgres=# show transaction isolation level;
+ transaction_isolation
+-----------------------
+ read committed
+(1 row)
 
+```
 *5.2.Начать новую транзакцию в обоих сессиях с дефолтным (не меняя) уровнем изоляции*
-
+```
+postgres=# BEGIN;
+BEGIN
+```
 *5.3.В первой сессии добавить новую запись insert into persons(first_name, second_name) values('sergey', 'sergeev')*
-
+```
+postgres=*# insert into persons(first_name, second_name) values('sergey', 'sergeev');
+INSERT 0 1
+```
 *5.4.Cделать select * from persons во второй сессии*
+```
+postgres=# BEGIN;
+BEGIN
+postgres=*# select * from persons;
+ id | first_name | second_name
+----+------------+-------------
+  1 | ivan       | ivanov
+  2 | petr       | petrov
+(2 rows)
 
+```
 **5.5.Видите ли вы новую запись и если да то почему?**
 
 *5.6.Завершить первую транзакцию - commit*
