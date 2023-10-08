@@ -1,12 +1,12 @@
 **Занятие 2. Домашнее задание**
 # 1.Создание ВМ в Яндекс Облаке
 *1.1.Создать новый проект в Google Cloud Platform, Яндекс облако или на любых ВМ, докере*
-
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_5.png)
 *1.2.Далее создать инстанс виртуальной машины с дефолтными параметрами*
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_4.png)
 # 2.Настройка подключения по ssh
 *2.1.Добавить свой ssh ключ в metadata ВМ*
-
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_6.png)
 *2.2.Зайти удаленным ssh (первая сессия), не забывайте про ssh-add*
 ```
 PS C:\Users\Egor> ssh ssh-rsa@158.160.116.157
