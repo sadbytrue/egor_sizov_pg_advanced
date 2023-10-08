@@ -94,15 +94,30 @@ postgres=*# select * from persons;
 
 ```
 **5.5.Видите ли вы новую запись и если да то почему?**
-
+Нет, потому что первая транзация, где выполнялся INSERT - UNCOMMITED, поэтому 2 транзакция при уровне изоляции read commited не делает SELECT "граязных" данных, которые не зафиксированны в 1 транзакции.
 *5.6.Завершить первую транзакцию - commit*
-
+```
+postgres=*# COMMIT;
+COMMIT
+```
 *5.7.Cделать select * from persons во второй сессии*
+```
+postgres=*# select * from persons;
+ id | first_name | second_name
+----+------------+-------------
+  1 | ivan       | ivanov
+  2 | petr       | petrov
+  3 | sergey     | sergeev
+(3 rows)
 
+```
 **5.8.Видите ли вы новую запись и если да то почему?**
-
+Да, потому что первая транзакция зафиксирована, данные не "грязные" и они доступны для чтения
 *5.9.Завершите транзакцию во второй сессии*
-
+```
+postgres=*# COMMIT;
+COMMIT
+```
 # 6.Эксперимент с уровнем изоляции repeatable read
 *6.1.Начать новые но уже repeatable read транзации - set transaction isolation level repeatable read*
 
