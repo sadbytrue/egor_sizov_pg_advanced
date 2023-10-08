@@ -8,7 +8,11 @@
 *2.1.Добавить свой ssh ключ в metadata ВМ*
 
 *2.2.Зайти удаленным ssh (первая сессия), не забывайте про ssh-add*
-
+```
+PS C:\Users\Egor> ssh ssh-rsa@158.160.116.157
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-84-generic x86_64)
+```
 # 3.Установка интсанса PostgreSQL
 *3.1.Поставить PostgreSQL*
 
