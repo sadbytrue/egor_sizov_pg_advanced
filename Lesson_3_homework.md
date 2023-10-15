@@ -80,7 +80,10 @@ postgres=#
 # 3.Подключение к PostgreSQL 15
 *3.1.Подключится из контейнера с клиентом к контейнеру с сервером и сделать таблицу с парой строк*
 ```
-postgres=# \set AUTOCOMMIT OFF
+postgres=# CREATE TABLE table1 (column1 int);
+CREATE TABLE
+postgres=# INSERT INTO table1 VALUES (1), (2);
+INSERT 0 2
 ```
 *3.2.Подключится к контейнеру с сервером с ноутбука/компьютера извне инстансов GCP/ЯО/места установки докера*
 ```
