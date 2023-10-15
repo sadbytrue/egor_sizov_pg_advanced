@@ -1,7 +1,7 @@
 **Занятие 3. Домашнее задание**
 # 1.Создание ВМ в Яндекс Облаке и установка Docker Engine
 *1.1.Создать ВМ с Ubuntu 20.04/22.04*
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_5.png)
+![Иллюстрация к проекту]([https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_5.png](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_7.png))
 *1.2.Поставить на нем Docker Engine*
 ```
 postgres=# \set AUTOCOMMIT OFF
