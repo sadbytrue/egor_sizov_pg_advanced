@@ -43,15 +43,39 @@ Server: Docker Engine - Community
 # 2.Развернуть PostgreSQL 15 в контейнере
 *2.1.Сделать каталог /var/lib/postgres*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ sudo docker network create pg-net
+7013ae5baad7b6d63a1d9e01909f6da46a8ea2dc7a573b786d4f5593d59e0452
 ```
 *2.2.Развернуть контейнер с PostgreSQL 15 смонтировав в него /var/lib/postgresql*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ sudo docker run --name pg-server --network pg-net -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 -v /var/lib/postgres:/var/lib/postgresql/data postgres:15
+Unable to find image 'postgres:15' locally
+15: Pulling from library/postgres
+a378f10b3218: Pull complete
+3ae46626af9d: Pull complete
+a3ca8ddad466: Pull complete
+6e0e6cf3ae2b: Pull complete
+d4f0c91b5558: Pull complete
+ace5692d59be: Pull complete
+19b7f523271d: Pull complete
+dec3f4c35148: Pull complete
+9a53aadebb04: Pull complete
+2fd8d4b4df9d: Pull complete
+665564a81906: Pull complete
+b69c79506eb3: Pull complete
+a433f9c93365: Pull complete
+Digest: sha256:3faff326de0fa3713424d44f3b85993459ac1917e0a4bfd35bab9e0a58e41900
+Status: Downloaded newer image for postgres:15
+3cef289f69aef0cd7f50e39cc5a1ede294a3575afd9784cba73b85f714b484f7
 ```
 *2.3.Развернуть контейнер с клиентом postgres*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ sudo docker run -it --rm --network pg-net --name pg-client postgres:15 psql -h pg-server -U postgres
+Password for user postgres:
+psql (15.4 (Debian 15.4-2.pgdg120+1))
+Type "help" for help.
+
+postgres=#
 ```
 # 3.Подключение к PostgreSQL 15
 *3.1.Подключится из контейнера с клиентом к контейнеру с сервером и сделать таблицу с парой строк*
