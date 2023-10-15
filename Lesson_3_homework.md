@@ -112,17 +112,36 @@ postgres=# SELECT * FROM table1;
 # 4.Удаление контейнера, создание заново и подключение заново
 *4.1.Удалить контейнер с сервером*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+3cef289f69ae   postgres:15   "docker-entrypoint.s…"   31 minutes ago   Up 31 minutes   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   pg-server
+admin@homework3:~$ sudo docker stop pg-server
+pg-server
+admin@homework3:~$ sudo docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+admin@homework3:~$ sudo docker remove  pg-server
+pg-server
 ```
 *4.2.Создать его заново*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ sudo docker run --name pg-server --network pg-net -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 -v /var/lib/postgres:/var/lib/postgresql/data postgres:15
+226740af1eef3c7b2fb3a4a62b433c7d898b692c59801dea3b1652a9ebbb2ba1
 ```
 *4.3.Подключится снова из контейнера с клиентом к контейнеру с сервером*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ sudo docker run -it --rm --network pg-net --name pg-client postgres:15 psql -h pg-server -U postgres
+Password for user postgres:
+psql (15.4 (Debian 15.4-2.pgdg120+1))
+Type "help" for help.
+
 ```
 *4.4.Проверить, что данные остались на месте*
 ```
-postgres=# \set AUTOCOMMIT OFF
+postgres=# SELECT * FROM table1;
+ column1
+---------
+       1
+       2
+(2 rows)
+
 ```
