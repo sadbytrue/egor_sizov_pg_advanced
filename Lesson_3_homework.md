@@ -10,7 +10,35 @@ Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)
 ```
 *1.2.Поставить на нем Docker Engine*
 ```
-postgres=# \set AUTOCOMMIT OFF
+admin@homework3:~$ curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && rm get-docker.sh && sudo usermod -aG docker $USER && newgrp docker
+<...>
+Client: Docker Engine - Community
+ Version:           24.0.6
+ API version:       1.43
+ Go version:        go1.20.7
+ Git commit:        ed223bc
+ Built:             Mon Sep  4 12:31:44 2023
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          24.0.6
+  API version:      1.43 (minimum version 1.12)
+  Go version:       go1.20.7
+  Git commit:       1a79695
+  Built:            Mon Sep  4 12:31:44 2023
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.24
+  GitCommit:        61f9fd88f79f081d64d6fa3bb1a0dc71ec870523
+ runc:
+  Version:          1.1.9
+  GitCommit:        v1.1.9-0-gccaecfc
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
 ```
 # 2.Развернуть PostgreSQL 15 в контейнере
 *2.1.Сделать каталог /var/lib/postgres*
