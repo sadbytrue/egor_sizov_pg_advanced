@@ -205,5 +205,68 @@ Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)Welcome to Ubu
 
 ssh-rsa@lesson4ex3:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-14
 
+ssh-rsa@lesson4ex3:~$ sudo systemctl stop postgresql@14-main
+ssh-rsa@lesson4ex3:~$ sudo -u postgres pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 down   postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
+
+ssh-rsa@lesson4ex3:~$ sudo apt install parted
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+parted is already the newest version (3.4-2build1).
+parted set to manually installed.
+The following packages were automatically installed and are no longer required:
+  linux-headers-5.15.0-76 linux-headers-5.15.0-76-generic linux-image-5.15.0-76-generic linux-modules-5.15.0-76-generic linux-modules-extra-5.15.0-76-generic
+Use 'sudo apt autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+
+ssh-rsa@lesson4ex3:~$ df -h -x tmpfs
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda2       7.8G  5.1G  2.4G  69% /
+
+ssh-rsa@lesson4ex3:~$ sudo nano /etc/fstab
+ssh-rsa@lesson4ex3:~$ sudo mount -a
+ssh-rsa@lesson4ex3:~$ df -h -x tmpfs
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda2       7.8G  5.1G  2.4G  69% /
+/dev/vdb1       9.8G   42M  9.2G   1% /mnt/data
+
+ssh-rsa@lesson4ex3:~$ cd /etc/postgresql/14/main
+ssh-rsa@lesson4ex3:/etc/postgresql/14/main$ sudo -u  postgres nano postgresql.conf
+data_directory = '/mnt/data/14/main'             # use data in another directory
+
+ssh-rsa@lesson4ex3:~$ cd /var/lib/
+ssh-rsa@lesson4ex3:/var/lib$ rm -r postgresql
+rm: descend into write-protected directory 'postgresql'? yes
+rm: descend into write-protected directory 'postgresql/.local'? yes
+rm: descend into write-protected directory 'postgresql/.local/share'? yes
+rm: remove write-protected directory 'postgresql/.local/share'? yes
+rm: cannot remove 'postgresql/.local/share': Permission denied
+rm: descend into write-protected directory 'postgresql/14'? yes
+rm: descend into write-protected directory 'postgresql/14/main'? yes
+rm: remove write-protected directory 'postgresql/14/main'? yes
+rm: cannot remove 'postgresql/14/main': Permission denied
+
+ssh-rsa@lesson4ex3:~$ sudo chown -R postgres:postgres /mnt/data/
+ssh-rsa@lesson4ex3:~$ sudo chown -R postgres:postgres /etc/postgresql/14/main
+
+ssh-rsa@lesson4ex3:~$ sudo pg_ctlcluster 14 main restart
+ssh-rsa@lesson4ex3:~$ sudo -u postgres pg_lsclusters
+Ver Cluster Port Status Owner    Data directory    Log file
+14  main    5432 online postgres /mnt/data/14/main /var/log/postgresql/postgresql-14-main.log
+
+ssh-rsa@lesson4ex3:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# SELECT * FROM test;
+ c1
+----
+ 1
+(1 row)
 
 ```
+
+Делал то же самое, что и в первой части. Кроме того, что внешний диск уже был размечен файловой системой и с его монтажом пришлось проводить меньше действий. Дополнительно была удалена директория /var/lib/postgres
