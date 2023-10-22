@@ -47,16 +47,76 @@ Ver Cluster Port Status Owner    Data directory              Log file
 ```
 # 3.Создание и монтирование диска
 *3.1.Создайте новый диск к ВМ размером 10GB*
-```
-
-```
 *3.2.Добавьте свеже-созданный диск к виртуальной машине - надо зайти в режим ее редактирования и дальше выбрать пункт attach existing disk*
-```
-
-```
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_11.png)
 *3.3.Проинициализируйте диск согласно инструкции и подмонтировать файловую систему, только не забывайте менять имя диска на актуальное, в вашем случае это скорее всего будет /dev/sdb - https://www.digitalocean.com/community/tutorials/how-to-partition-and-format-storage-devices-in-linux*
 ```
+ssh-rsa@lesson4ex2:~$ sudo apt install parted
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+parted is already the newest version (3.4-2build1).
+parted set to manually installed.
+The following packages were automatically installed and are no longer required:
+  linux-headers-5.15.0-76 linux-headers-5.15.0-76-generic linux-image-5.15.0-76-generic linux-modules-5.15.0-76-generic linux-modules-extra-5.15.0-76-generic
+Use 'sudo apt autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 
+ssh-rsa@lesson4ex2:~$ sudo parted -l | grep Error
+Error: /dev/vdb: unrecognised disk label
+
+ssh-rsa@lesson4ex2:~$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0    7:0    0  63.3M  1 loop /snap/core20/1822
+loop1    7:1    0  63.5M  1 loop /snap/core20/2015
+loop2    7:2    0 111.9M  1 loop /snap/lxd/24322
+loop3    7:3    0  49.8M  1 loop /snap/snapd/18357
+vda    252:0    0     8G  0 disk
+├─vda1 252:1    0     1M  0 part
+└─vda2 252:2    0     8G  0 part /
+vdb    252:16   0    10G  0 disk
+
+ssh-rsa@lesson4ex2:~$ sudo parted /dev/vdb mklabel gpt
+Information: You may need to update /etc/fstab.
+
+ssh-rsa@lesson4ex2:~$ sudo parted -a opt /dev/vdb mkpart primary ext4 0% 100%
+Information: You may need to update /etc/fstab.
+
+ssh-rsa@lesson4ex2:~$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0    7:0    0  63.3M  1 loop /snap/core20/1822
+loop1    7:1    0  63.5M  1 loop /snap/core20/2015
+loop2    7:2    0 111.9M  1 loop /snap/lxd/24322
+loop3    7:3    0  49.8M  1 loop /snap/snapd/18357
+vda    252:0    0     8G  0 disk
+├─vda1 252:1    0     1M  0 part
+└─vda2 252:2    0     8G  0 part /
+vdb    252:16   0    10G  0 disk
+└─vdb1 252:17   0    10G  0 part
+
+ssh-rsa@lesson4ex2:~$ sudo mkfs.ext4 -L datapartition /dev/vdb1
+mke2fs 1.46.5 (30-Dec-2021)
+Creating filesystem with 2620928 4k blocks and 655360 inodes
+Filesystem UUID: 801e2200-a4ca-4f1a-8326-1a074ad83044
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (16384 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+ssh-rsa@lesson4ex2:~$ sudo mkdir -p /mnt/data
+ssh-rsa@lesson4ex2:~$ sudo nano /etc/fstab
+ssh-rsa@lesson4ex2:~$ df -h -x tmpfs
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda2       7.8G  5.1G  2.4G  69% /
+/dev/vdb1       9.8G   24K  9.3G   1% /mnt/data
+ssh-rsa@lesson4ex2:~$ echo "success" | sudo tee /mnt/data/test_file
+success
+ssh-rsa@lesson4ex2:~$ cat /mnt/data/test_file
+success
+ssh-rsa@lesson4ex2:~$ sudo rm /mnt/data/test_file
 ```
 *3.4.Перезагрузите инстанс и убедитесь, что диск остается примонтированным (если не так смотрим в сторону fstab)*
 ```
