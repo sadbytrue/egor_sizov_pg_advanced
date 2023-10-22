@@ -78,71 +78,53 @@ CREATE ROLE
 ```
 *3.6.Дайте роль readonly пользователю testread*
 ```
-testdb=# GRANT readonly  TO testread;
+testdb=# GRANT readonly TO testread;
 GRANT ROLE
 ```
 # 4.Проверка прав пользователя testread из донастройка
 *4.1.Зайдите под пользователем testread в базу данных testdb*
 ```
-
+postgres=# \c testdb testread localhost 5432;
+Password for user testread:
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+You are now connected to database "testdb" as user "testread" on host "localhost" (address "::1") at port "5432".
 ```
 *4.2.Сделайте select * from testnm.t1;*
 ```
-
+testdb=> SELECT * FROM testnm.t1;
+ c1
+----
+  1
+(1 row)
 ```
 *4.3.Получилось?*
-```
-
-```
+Да.
 *4.4.Есть идеи почему? Если нет - смотрите шпаргалку*
+Потому что роли 'readonly' даны права на использование схемы testnm и SELECT к таблице t1.
+*4.5.Теперь попробуйте выполнить команду create table t2(c1 integer); insert into t2 values (2);*
+```
+testdb=> create table t2 (c1 integer);
+ERROR:  permission denied for schema public
+LINE 1: create table t2 (c1 integer);
+
+```
+*4.6.А как так? Нам же никто прав на создание таблиц и insert в них под ролью readonly?*
 ```
 
 ```
-*4.5.Как сделать так чтобы такое больше не повторялось? Если нет идей - смотрите шпаргалку*
+*4.7.Есть идеи как убрать эти права? Если нет - смотрите шпаргалку*
 ```
 
 ```
-*4.6.Сделайте select * from testnm.t1;*
+*4.8.Если вы справились сами то расскажите что сделали и почему, если смотрели шпаргалку - объясните что сделали и почему выполнив указанные в ней команды*
 ```
 
 ```
-*4.7.Получилось?*
+*4.9.Теперь попробуйте выполнить команду create table t3(c1 integer); insert into t2 values (2);*
 ```
 
 ```
-*4.8.Есть идеи почему? Если нет - смотрите шпаргалку*
-```
-
-```
-*4.9.Сделайте select * from testnm.t1;*
-```
-
-```
-*4.10.Получилось? Ура!*
-```
-
-```
-*4.11.Теперь попробуйте выполнить команду create table t2(c1 integer); insert into t2 values (2);*
-```
-
-```
-*4.12.А как так? Нам же никто прав на создание таблиц и insert в них под ролью readonly?*
-```
-
-```
-*4.13.Есть идеи как убрать эти права? Если нет - смотрите шпаргалку*
-```
-
-```
-*4.14.Если вы справились сами то расскажите что сделали и почему, если смотрели шпаргалку - объясните что сделали и почему выполнив указанные в ней команды*
-```
-
-```
-*4.15.Теперь попробуйте выполнить команду create table t3(c1 integer); insert into t2 values (2);*
-```
-
-```
-*4.16.Расскажите что получилось и почему*
+*4.10.Расскажите что получилось и почему*
 ```
 
 ```
