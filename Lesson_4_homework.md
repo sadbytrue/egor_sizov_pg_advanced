@@ -120,46 +120,90 @@ ssh-rsa@lesson4ex2:~$ sudo rm /mnt/data/test_file
 ```
 *3.4.Перезагрузите инстанс и убедитесь, что диск остается примонтированным (если не так смотрим в сторону fstab)*
 ```
+ssh-rsa@lesson4ex2:~$ sudo pg_ctlcluster 14 main restart
 
+ssh-rsa@lesson4ex2:~$ sudo -u postgres pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 online postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
+
+ssh-rsa@lesson4ex2:~$ df -h -x tmpfs
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda2       7.8G  5.1G  2.4G  69% /
+/dev/vdb1       9.8G   24K  9.3G   1% /mnt/data
 ```
 *3.5.Сделайте пользователя postgres владельцем /mnt/data - chown -R postgres:postgres /mnt/data/*
 ```
-
+ssh-rsa@lesson4ex2:~$ sudo chown -R postgres:postgres /mnt/data/
 ```
 # 4.Перенос данных на премонтированный диск
 *4.1.Перенесите содержимое /var/lib/postgres/15 в /mnt/data - mv /var/lib/postgresql/15/mnt/data*
 ```
+ssh-rsa@lesson4ex2:~$ sudo systemctl stop postgresql@14-main
+ssh-rsa@lesson4ex2:~$ sudo -u postgres pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 down   postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
 
+ssh-rsa@lesson4ex2:~$ sudo -u postgres mv /var/lib/postgresql/14 /mnt/data
 ```
-*4.2.Попытайтесь запустить кластер - sudo -u postgres pg_ctlcluster 15 main start*
+*4.2.Попытайтесь запустить кластер - sudo -u postgres pg_ctlcluster 14 main start*
 ```
-
+ssh-rsa@lesson4ex2:/mnt/data/14$ sudo -u postgres pg_ctlcluster 14 main start
+Error: /var/lib/postgresql/14/main is not accessible or does not exist
 ```
 *4.3.Напишите получилось или нет и почему*
-```
 
-```
-*4.4.Задание: найти конфигурационный параметр в файлах раположенных в /etc/postgresql/15/main который надо поменять и поменяйте его*
-```
+Не получилось, т.к. директория main была перемещена на примонтированный диск
 
+*4.4.Задание: найти конфигурационный параметр в файлах раположенных в /etc/postgresql/14/main который надо поменять и поменяйте его*
+```
+ssh-rsa@lesson4ex2:/etc/postgresql/14/main$ sudo -u  postgres nano postgresql.conf
+```
+```
+data_directory = '/mnt/data/14/main'             # use data in another directory
 ```
 *4.5.Напишите что и почему поменяли*
+Поменял data directory, где указал путь до примонтированного диска
+*4.6.Попытайтесь запустить кластер - sudo -u postgres pg_ctlcluster 14 main start*
 ```
-
-```
-*4.6.Попытайтесь запустить кластер - sudo -u postgres pg_ctlcluster 15 main start*
-```
-
+ssh-rsa@lesson4ex2:/etc/postgresql/14/main$ sudo pg_ctlcluster 14 main restart
+Job for postgresql@14-main.service failed because the service did not take the steps required by its unit configuration.
+See "systemctl status postgresql@14-main.service" and "journalctl -xeu postgresql@14-main.service" for details.
 ```
 *4.7.Напишите получилось или нет и почему*
-```
 
+Не хватает прав на доступ к директории с конф-файлами https://serverfault.com/questions/1006099/postgresql-10-and-ubuntu-unable-to-postgresql-server-up. Надо выдать.
+
+```
+ssh-rsa@lesson4ex2:~$ sudo chown -R postgres:postgres /mnt/data/
+ssh-rsa@lesson4ex2:~$ sudo chown -R postgres:postgres /etc/postgresql/14/main
 ```
 *4.8.Зайдите через через psql и проверьте содержимое ранее созданной таблицы*
 ```
+ssh-rsa@lesson4ex2:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# SELECT * FROM test;
+ c1
+----
+ 1
+(1 row)
 ```
 *4.9.Задание со звездочкой: не удаляя существующий инстанс ВМ сделайте новый, поставьте на его PostgreSQL, удалите файлы с данными из /var/lib/postgres, перемонтируйте внешний диск который сделали ранее от первой виртуальной машины ко второй и запустите PostgreSQL на второй машине так чтобы он работал с данными на внешнем диске, расскажите как вы это сделали и что в итоге получилось*
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_12.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_12.png)
 ```
+PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
+PS C:\Users\Egor> ssh ssh-rsa@158.160.63.183
+The authenticity of host '158.160.63.183 (158.160.63.183)' can't be established.
+ECDSA key fingerprint is SHA256:1oYselplLlTszL69G8DG1MgzzCZB3EahUUil3Yx9vno.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '158.160.63.183' (ECDSA) to the list of known hosts.
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)
+
+ssh-rsa@lesson4ex3:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-14
+
 
 ```
