@@ -192,7 +192,7 @@ postgres=# SELECT * FROM test;
 ```
 *4.9.Задание со звездочкой: не удаляя существующий инстанс ВМ сделайте новый, поставьте на его PostgreSQL, удалите файлы с данными из /var/lib/postgres, перемонтируйте внешний диск который сделали ранее от первой виртуальной машины ко второй и запустите PostgreSQL на второй машине так чтобы он работал с данными на внешнем диске, расскажите как вы это сделали и что в итоге получилось*
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_12.png)
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_12.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_13.png)
 ```
 PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
 PS C:\Users\Egor> ssh ssh-rsa@158.160.63.183
