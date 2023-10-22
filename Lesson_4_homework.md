@@ -1,7 +1,8 @@
 # 1.Создание виртуальной машины
 *1.1.Создайте виртуальную машину c Ubuntu 20.04/22.04 LTS в GCE/ЯО/Virtual Box/докере*
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_10.png)
 ```
-
+PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
 ```
 # 2.Установка PostgreSQL, создание таблицы и остановка Postgresql
 *2.1.Поставьте на нее PostgreSQL 15 через sudo apt*
