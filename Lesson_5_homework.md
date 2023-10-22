@@ -113,7 +113,67 @@ LINE 1: create table t2 (c1 integer);
 
 ```
 *4.6.А как так? Нам же никто прав на создание таблиц и insert в них под ролью readonly?*
-В Postgresql 15 ожидаемого поведения не наблюдается. Проверим на 14.
+
+В Postgresql 15 ожидаемого поведения не наблюдается. Проверим на 14 версии.
+
+```
+ssh-rsa@lesson5:~$ sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-14
+ssh-rsa@lesson5:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5433 online postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+ssh-rsa@lesson5:~$ sudo pg_ctlcluster 15 main stop
+ssh-rsa@lesson5:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5433 online postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
+15  main    5432 down   postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+ssh-rsa@lesson5:~$ sudo pg_dropcluster 15 main
+ssh-rsa@lesson5:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1), server 14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE testdb;
+CREATE DATABASE
+postgres=# \c testdb;
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1), server 14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+You are now connected to database "testdb" as user "postgres".
+testdb=# CREATE SCHEMA testnm;
+CREATE SCHEMA
+testdb=# CREATE TABLE testnm.t1 (c1 integer);
+CREATE TABLE
+testdb=# INSERT INTO testnm.t1 (c1) VALUES (1);
+INSERT 0 1
+testdb=# CREATE ROLE readonly NOLOGIN;
+CREATE ROLE
+testdb=# GRANT CONNECT ON DATABASE testdb TO readonly;
+GRANT
+testdb=# GRANT USAGE ON SCHEMA testnm TO readonly;
+GRANT
+testdb=# GRANT SELECT ON ALL TABLES IN SCHEMA testnm TO readonly;
+GRANT
+testdb=# CREATE USER testread  WITH PASSWORD 'test123';
+CREATE ROLE
+testdb=# GRANT readonly TO testread;
+GRANT ROLE
+testdb=# \c testdb testread localhost 5432;
+connection to server at "localhost" (::1), port 5432 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+Previous connection kept
+testdb=# \c testdb testread localhost 5433;
+Password for user testread:
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1), server 14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+You are now connected to database "testdb" as user "testread" on host "localhost" (address "::1") at port "5433".
+testdb=> create table t2(c1 integer);
+CREATE TABLE
+testdb=> insert into t2 values (2);
+INSERT 0 1
+```
+
+В PostgreSQL 14 создалась таблица и произвелась вставка, потому что все пользователям неявно даются привелегии на схему public
 
 *4.7.Есть идеи как убрать эти права? Если нет - смотрите шпаргалку*
 ```
