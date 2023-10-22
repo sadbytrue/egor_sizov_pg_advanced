@@ -175,19 +175,41 @@ INSERT 0 1
 
 В PostgreSQL 14 создалась таблица и произвелась вставка, потому что все пользователям неявно даются привелегии на схему public
 
-*4.7.Есть идеи как убрать эти права? Если нет - смотрите шпаргалку*
-```
 
-```
+*4.7.Есть идеи как убрать эти права? Если нет - смотрите шпаргалку*
+
+
+Отобрать права на создание объектов в схеме public и все права на таблицу для группы пользователей PUBLIC
+
 *4.8.Если вы справились сами то расскажите что сделали и почему, если смотрели шпаргалку - объясните что сделали и почему выполнив указанные в ней команды*
 ```
-
+ssh-rsa@lesson5:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1), server 14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+Type "help" for help.
+postgres=# \c testdb;
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1), server 14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+You are now connected to database "testdb" as user "postgres".
+testdb=# REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+REVOKE
+testdb=# REVOKE ALL ON public.t2 FROM PUBLIC;
+REVOKE
 ```
 *4.9.Теперь попробуйте выполнить команду create table t3(c1 integer); insert into t2 values (2);*
 ```
-
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+REVOKE
+testdb=# \c testdb testread localhost 5433;
+Password for user testread:
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1), server 14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+You are now connected to database "testdb" as user "testread" on host "localhost" (address "::1") at port "5433".
+testdb=> create table t3(c1 integer);
+ERROR:  permission denied for schema public
+LINE 1: create table t3(c1 integer);
+testdb=> insert into t2 values (2);
+ERROR:  permission denied for table t2
 ```
 *4.10.Расскажите что получилось и почему*
-```
 
-```
+Все права для таблицы у группы PUBLIC отобраны, также отобрано право CREATE для схемы public. Теперь можно для каждой роли/пользователя назначить необходимые права в данной схеме 
