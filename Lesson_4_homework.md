@@ -3,26 +3,47 @@
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_10.png)
 ```
 PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
+PS C:\Users\Egor> ssh ssh-rsa@51.250.70.95
+The authenticity of host '51.250.70.95 (51.250.70.95)' can't be established.
+ECDSA key fingerprint is SHA256:ChayyG+HjZCbpd3hMY5qiAcOlfBAjUWgmvaOTTfJBxY.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '51.250.70.95' (ECDSA) to the list of known hosts.
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)
 ```
 # 2.Установка PostgreSQL, создание таблицы и остановка Postgresql
-*2.1.Поставьте на нее PostgreSQL 15 через sudo apt*
+*2.1.Поставьте на нее PostgreSQL 14 через sudo apt*
 ```
-
+ssh-rsa@lesson4ex2:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-14
 ```
 *2.2.Проверьте что кластер запущен через sudo -u postgres pg_lsclusters*
 ```
-
+ssh-rsa@lesson4ex2:~$ sudo -u postgres pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 online postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
 ```
 *2.3.Зайдите из под пользователя postgres в psql и сделайте произвольную таблицу с произвольным содержимым
 postgres=# create table test(c1 text);
 postgres=# insert into test values('1');
 \q*
 ```
+ssh-rsa@lesson4ex2:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (14.9 (Ubuntu 14.9-1.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# create table test(c1 text);
+CREATE TABLE
+postgres=# insert into test values('1');
+INSERT 0 1
+postgres=# \q
 ```
-*2.4.Остановите postgres например через sudo -u postgres pg_ctlcluster 15 main stop*
+*2.4.Остановите postgres например через sudo -u postgres pg_ctlcluster 14 main stop*
 ```
-
+ssh-rsa@lesson4ex2:~$ sudo systemctl stop postgresql@14-main
+ssh-rsa@lesson4ex2:~$ sudo -u postgres pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+14  main    5432 down   postgres /var/lib/postgresql/14/main /var/log/postgresql/postgresql-14-main.log
 ```
 # 3.Создание и монтирование диска
 *3.1.Создайте новый диск к ВМ размером 10GB*
