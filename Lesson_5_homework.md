@@ -1,5 +1,6 @@
 # 1.Создание виртуальной машины и кластера PostgreSQL
 *1.1.Cоздайте новый кластер PostgresSQL 14*
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_9.png)
 ```
 
 ```
