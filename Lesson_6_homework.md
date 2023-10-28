@@ -157,43 +157,147 @@ tps = 680.052594 (without initial connection time) -> 689.301834 (without initia
 # 4.Тестирование autovacuum
 *4.1.Создать таблицу с текстовым полем и заполнить случайными или сгенерированными данным в размере 1 млн строк*
 ```
+postgres=# DROP DATABASE db_for_pgbench;
+DROP DATABASE
+postgres=# CREATE DATABASE autovacuum_test;
+CREATE DATABASE
+postgres=# \c autovacuum_test;
+You are now connected to database "autovacuum_test" as user "postgres".
 
+autovacuum_test=# CREATE TABLE test_table (id serial, data text );
+CREATE TABLE
+autovacuum_test=# INSERT INTO test_table(data) SELECT generate_series::text||'a'::text FROM (SELECT *  FROM generate_series(1,1000000)) generate_series_table;
+INSERT 0 1000000
+autovacuum_test=# SELECT * FROM test_table ORDER BY id LIMIT 10;
+ id | data
+----+------
+  1 | 1a
+  2 | 2a
+  3 | 3a
+  4 | 4a
+  5 | 5a
+  6 | 6a
+  7 | 7a
+  8 | 8a
+  9 | 9a
+ 10 | 10a
+(10 rows)
 ```
 *4.2.Посмотреть размер файла с таблицей*
 ```
-
+autovacuum_test=# SELECT pg_size_pretty(pg_total_relation_size('test_table'));
+ pg_size_pretty
+----------------
+ 42 MB
+(1 row)
 ```
 *4.3.Пять раз обновить все строчки и добавить к каждой строчке любой символ*
-```
-
-```
 *4.4.Посмотреть количество мертвых строчек в таблице и когда последний раз приходил автовакуум*
 ```
+autovacuum_test=# UPDATE test_table SET data=data||'b'::text;UPDATE test_table SET data=data||'c'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'f'::text;SELECT * FROM test_table ORDER BY id LIMIT 10;SELECT relname, n_live_tup, n_dead_tup, trunc(100*n_dead_tup/(n_live_tup+1))::float "ratio%", last_autovacuum FROM pg_stat_user_TABLEs WHERE relname = 'test_table';
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+ id |   data
+----+----------
+  1 | 1abcddf
+  2 | 2abcddf
+  3 | 3abcddf
+  4 | 4abcddf
+  5 | 5abcddf
+  6 | 6abcddf
+  7 | 7abcddf
+  8 | 8abcddf
+  9 | 9abcddf
+ 10 | 10abcddf
+(10 rows)
+
+  relname   | n_live_tup | n_dead_tup | ratio% |        last_autovacuum
+------------+------------+------------+--------+-------------------------------
+ test_table |    1000000 |    1999085 |    199 | 2023-10-28 14:18:17.335066+00
+(1 row)
 
 ```
 *4.5.Подождать некоторое время, проверяя, прошел ли автовакуум*
 ```
-
+autovacuum_test=# SELECT relname, n_live_tup, n_dead_tup, trunc(100*n_dead_tup/(n_live_tup+1))::float "ratio%", last_autovacuum FROM pg_stat_user_TABLEs WHERE relname = 'test_table';
+  relname   | n_live_tup | n_dead_tup | ratio% |        last_autovacuum
+------------+------------+------------+--------+-------------------------------
+ test_table |    1000000 |          0 |      0 | 2023-10-28 14:19:16.994656+00
+(1 row)
 ```
 *4.6.Пять раз обновить все строчки и добавить к каждой строчке любой символ*
-```
-
-```
 *4.7.Посмотреть размер файла с таблицей*
 ```
+autovacuum_test=# UPDATE test_table SET data=data||'g'::text;UPDATE test_table SET data=data||'e'::text;UPDATE test_table SET data=data||'f'::text;UPDATE test_table SET data=data||'h'::text;UPDATE test_table SET data=data||'j'::text;SELECT * FROM test_table ORDER BY id LIMIT 10;SELECT pg_size_pretty(pg_total_relation_size('test_table'));
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+ id |     data
+----+---------------
+  1 | 1abcddfgefhj
+  2 | 2abcddfgefhj
+  3 | 3abcddfgefhj
+  4 | 4abcddfgefhj
+  5 | 5abcddfgefhj
+  6 | 6abcddfgefhj
+  7 | 7abcddfgefhj
+  8 | 8abcddfgefhj
+  9 | 9abcddfgefhj
+ 10 | 10abcddfgefhj
+(10 rows)
 
+ pg_size_pretty
+----------------
+ 249 MB
+(1 row)
 ```
 *4.8.Отключить Автовакуум на конкретной таблице*
 ```
-
+autovacuum_test=# ALTER TABLE test_table SET (autovacuum_enabled = off);
+ALTER TABLE
 ```
 *4.9.Десять раз обновить все строчки и добавить к каждой строчке любой символ*
-```
-
-```
 *4.10.Посмотреть размер файла с таблицей*
 ```
+autovacuum_test=# UPDATE test_table SET data=data||'b'::text;UPDATE test_table SET data=data||'c'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'f'::text;UPDATE test_table SET data=data||'g'::text;UPDATE test_table SET data=data||'e'::text;UPDATE test_table SET data=data||'f'::text;UPDATE test_table SET data=data||'h'::text;UPDATE test_table SET data=data||'j'::text;SELECT * FROM test_table ORDER BY id LIMIT 10;SELECT relname, n_live_tup, n_dead_tup, trunc(100*n_dead_tup/(n_live_tup+1))::float "ratio%", last_autovacuum FROM pg_stat_user_TABLEs WHERE relname = 'test_table';SELECT pg_size_pretty(pg_total_relation_size('test_table'));
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+UPDATE 1000000
+ id |          data
+----+-------------------------
+  1 | 1abcddfgefhjbcddfgefhj
+  2 | 2abcddfgefhjbcddfgefhj
+  3 | 3abcddfgefhjbcddfgefhj
+  4 | 4abcddfgefhjbcddfgefhj
+  5 | 5abcddfgefhjbcddfgefhj
+  6 | 6abcddfgefhjbcddfgefhj
+  7 | 7abcddfgefhjbcddfgefhj
+  8 | 8abcddfgefhjbcddfgefhj
+  9 | 9abcddfgefhjbcddfgefhj
+ 10 | 10abcddfgefhjbcddfgefhj
+(10 rows)
 
+  relname   | n_live_tup | n_dead_tup | ratio% |        last_autovacuum
+------------+------------+------------+--------+-------------------------------
+ test_table |    1000000 |    9995870 |    999 | 2023-10-28 14:23:17.621321+00
+(1 row)
+
+ pg_size_pretty
+----------------
+ 608 MB
+(1 row)
 ```
 *4.11.Объясните полученный результат*
 
@@ -203,7 +307,8 @@ tps = 680.052594 (without initial connection time) -> 689.301834 (without initia
 
 *4.12.Не забудьте включить автовакуум*
 ```
-
+autovacuum_test=# ALTER TABLE test_table SET (autovacuum_enabled = on);
+ALTER TABLE
 ```
 # 5.Задание со *
 *5.1.Написать анонимную процедуру, в которой в цикле 10 раз обновятся все строчки в искомой таблице. Не забыть вывести номер шага цикла*
