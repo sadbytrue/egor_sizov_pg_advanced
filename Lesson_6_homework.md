@@ -1,17 +1,90 @@
 # 1.Создание виртуальной машины и кластера PostgreSQL
-*1.1.Cоздайте новый кластер PostgresSQL 14*
+*1.1.Создать инстанс ВМ с 2 ядрами и 4 Гб ОЗУ и SSD 10GB*
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_9.png)
 ```
-PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
-PS C:\Users\Egor> ssh ssh-rsa@158.160.37.78
-The authenticity of host '158.160.37.78 (158.160.37.78)' can't be established.
-ECDSA key fingerprint is SHA256:XFW6NW2Q5FmG/kXURvo75GRXGgYN3ud+JZnmxDTZkPg.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '158.160.37.78' (ECDSA) to the list of known hosts.
-Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
-Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
-Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-86-generic x86_64)
+
 ```
+*1.2.Установить на него PostgreSQL 15 с дефолтными настройками*
 ```
-ssh-rsa@lesson5:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
+
+```
+# 2.Тестирование с помощью pgbench инстанса с дефолтными настройками
+*2.1.Создать БД для тестов: выполнить pgbench -i postgres*
+```
+
+```
+*2.2.Запустить pgbench -c8 -P 6 -T 60 -U postgres postgres*
+```
+
+```
+# 3.Тестирование с помощью pgbench инстанса с кастомными настройками
+*3.1.Применить параметры настройки PostgreSQL из прикрепленного к материалам занятия файла*
+```
+
+```
+*3.2.Протестировать заново*
+```
+
+```
+*3.3.Что изменилось и почему?*
+
+
+
+
+
+# 4.Тестирование autovacuum
+*4.1.Создать таблицу с текстовым полем и заполнить случайными или сгенерированными данным в размере 1 млн строк*
+```
+
+```
+*4.2.Посмотреть размер файла с таблицей*
+```
+
+```
+*4.3.Пять раз обновить все строчки и добавить к каждой строчке любой символ*
+```
+
+```
+*4.4.Посмотреть количество мертвых строчек в таблице и когда последний раз приходил автовакуум*
+```
+
+```
+*4.5.Подождать некоторое время, проверяя, прошел ли автовакуум*
+```
+
+```
+*4.6.Пять раз обновить все строчки и добавить к каждой строчке любой символ*
+```
+
+```
+*4.7.Посмотреть размер файла с таблицей*
+```
+
+```
+*4.8.Отключить Автовакуум на конкретной таблице*
+```
+
+```
+*4.9.Десять раз обновить все строчки и добавить к каждой строчке любой символ*
+```
+
+```
+*4.10.Посмотреть размер файла с таблицей*
+```
+
+```
+*4.11.Объясните полученный результат*
+
+
+
+
+
+*4.12.Не забудьте включить автовакуум*
+```
+
+```
+# 5.Задание со *
+*5.1.Написать анонимную процедуру, в которой в цикле 10 раз обновятся все строчки в искомой таблице. Не забыть вывести номер шага цикла*
+```
+
 ```
