@@ -314,5 +314,49 @@ ALTER TABLE
 # 5.Задание со *
 *5.1.Написать анонимную процедуру, в которой в цикле 10 раз обновятся все строчки в искомой таблице. Не забыть вывести номер шага цикла*
 ```
+CREATE OR REPLACE FUNCTION update_test_table() RETURNS void AS $$
+DECLARE
+     i integer :=0;
+BEGIN
+      WHILE i<10 LOOP
+           UPDATE test_table SET data=data||i::text;
+           RAISE NOTICE 'шаг % завершен', i;
+           i:=i+1;
+      END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+```
+```
+autovacuum_test=# CREATE OR REPLACE FUNCTION update_test_table() RETURNS void AS $$ DECLARE i integer :=0;  BEGIN WHILE i<10 LOOP UPDATE test_table SET data=data||i::text; RAISE NOTICE 'шаг % завершен', i; i:=i+1; END LOOP; END; $$ LANGUAGE plpgsql;
+CREATE FUNCTION
+autovacuum_test=# SELECT update_test_table();
+NOTICE:  шаг 0 завершен
+NOTICE:  шаг 1 завершен
+NOTICE:  шаг 2 завершен
+NOTICE:  шаг 3 завершен
+NOTICE:  шаг 4 завершен
+NOTICE:  шаг 5 завершен
+NOTICE:  шаг 6 завершен
+NOTICE:  шаг 7 завершен
+NOTICE:  шаг 8 завершен
+NOTICE:  шаг 9 завершен
+ update_test_table
+-------------------
 
+(1 row)
+
+autovacuum_test=# SELECT * FROM test_table ORDER BY id LIMIT 10;
+ id |               data
+----+-----------------------------------
+  1 | 1abcddfgefhjbcddfgefhj0123456789
+  2 | 2abcddfgefhjbcddfgefhj0123456789
+  3 | 3abcddfgefhjbcddfgefhj0123456789
+  4 | 4abcddfgefhjbcddfgefhj0123456789
+  5 | 5abcddfgefhjbcddfgefhj0123456789
+  6 | 6abcddfgefhjbcddfgefhj0123456789
+  7 | 7abcddfgefhjbcddfgefhj0123456789
+  8 | 8abcddfgefhjbcddfgefhj0123456789
+  9 | 9abcddfgefhjbcddfgefhj0123456789
+ 10 | 10abcddfgefhjbcddfgefhj0123456789
+(10 rows)
 ```
