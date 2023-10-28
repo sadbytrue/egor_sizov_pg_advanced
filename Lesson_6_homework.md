@@ -84,17 +84,70 @@ tps = 680.052594 (without initial connection time)
 # 3.Тестирование с помощью pgbench инстанса с кастомными настройками
 *3.1.Применить параметры настройки PostgreSQL из прикрепленного к материалам занятия файла*
 ```
+ssh-rsa@lesson6:~$ cd /etc/postgresql/15/main
+ssh-rsa@lesson6:/etc/postgresql/15/main$ sudo -u  postgres nano postgresql.conf
+ssh-rsa@lesson6:/etc/postgresql/15/main$
 
+ssh-rsa@lesson6:/etc/postgresql/15/main$ sudo systemctl stop postgresql@15-main
+ssh-rsa@lesson6:/etc/postgresql/15/main$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 down   postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+
+ssh-rsa@lesson6:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main restart
+ssh-rsa@lesson6:/etc/postgresql/15/main$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
 ```
 *3.2.Протестировать заново*
 ```
-
+ssh-rsa@lesson6:/etc/postgresql/15/main$ cd
+ssh-rsa@lesson6:~$ pgbench -i -U postgres -h localhost -p 5432  db_for_pgbench
+Password:
+dropping old tables...
+creating tables...
+generating data (client-side)...
+100000 of 100000 tuples (100%) done (elapsed 0.03 s, remaining 0.00 s)
+vacuuming...
+creating primary keys...
+done in 0.25 s (drop tables 0.01 s, create tables 0.01 s, client-side generate 0.12 s, vacuum 0.05 s, primary keys 0.06 s).
+ssh-rsa@lesson6:~$ pgbench -c8 -P 6 -T 60 -U postgres -h localhost -p 5432 db_for_pgbench
+Password:
+pgbench (15.4 (Ubuntu 15.4-2.pgdg22.04+1))
+starting vacuum...end.
+progress: 6.0 s, 599.2 tps, lat 13.115 ms stddev 10.347, 0 failed
+progress: 12.0 s, 756.7 tps, lat 10.552 ms stddev 6.960, 0 failed
+progress: 18.0 s, 758.8 tps, lat 10.565 ms stddev 11.876, 0 failed
+progress: 24.0 s, 694.5 tps, lat 11.520 ms stddev 10.403, 0 failed
+progress: 30.0 s, 520.8 tps, lat 15.335 ms stddev 15.993, 0 failed
+progress: 36.0 s, 679.8 tps, lat 11.781 ms stddev 10.262, 0 failed
+progress: 42.0 s, 752.8 tps, lat 10.616 ms stddev 7.259, 0 failed
+progress: 48.0 s, 791.8 tps, lat 10.116 ms stddev 6.219, 0 failed
+progress: 54.0 s, 772.8 tps, lat 10.348 ms stddev 6.884, 0 failed
+progress: 60.0 s, 555.5 tps, lat 14.396 ms stddev 14.054, 0 failed
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 1
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 41305
+number of failed transactions: 0 (0.000%)
+latency average = 11.603 ms
+latency stddev = 10.247 ms
+initial connection time = 97.128 ms
+tps = 689.301834 (without initial connection time)
 ```
 *3.3.Что изменилось и почему?*
 
+number of transactions actually processed: 40748 -> 41305
+number of failed transactions: 0 (0.000%) -> 0 (0.000%)
+latency average = 11.761 ms -> 11.603 ms
+latency stddev = 14.293 ms -> 10.247 ms
+initial connection time = 100.531 ms -> 97.128 ms
+tps = 680.052594 (without initial connection time) -> 689.301834 (without initial connection time)
 
-
-
+Среднее количество транзакций в секунду (tps) возросло на 9, т.к. были увеличены лимиты используемых мощностей, прежде всего объем shared_buffers
 
 # 4.Тестирование autovacuum
 *4.1.Создать таблицу с текстовым полем и заполнить случайными или сгенерированными данным в размере 1 млн строк*
