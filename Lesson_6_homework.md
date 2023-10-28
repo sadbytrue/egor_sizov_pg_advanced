@@ -141,10 +141,15 @@ tps = 689.301834 (without initial connection time)
 *3.3.Что изменилось и почему?*
 
 number of transactions actually processed: 40748 -> 41305
+
 number of failed transactions: 0 (0.000%) -> 0 (0.000%)
+
 latency average = 11.761 ms -> 11.603 ms
+
 latency stddev = 14.293 ms -> 10.247 ms
+
 initial connection time = 100.531 ms -> 97.128 ms
+
 tps = 680.052594 (without initial connection time) -> 689.301834 (without initial connection time)
 
 Среднее количество транзакций в секунду (tps) возросло на 9, т.к. были увеличены лимиты используемых мощностей, прежде всего объем shared_buffers
