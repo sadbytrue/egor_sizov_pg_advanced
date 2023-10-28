@@ -192,6 +192,7 @@ autovacuum_test=# SELECT pg_size_pretty(pg_total_relation_size('test_table'));
 (1 row)
 ```
 *4.3.Пять раз обновить все строчки и добавить к каждой строчке любой символ*
+
 *4.4.Посмотреть количество мертвых строчек в таблице и когда последний раз приходил автовакуум*
 ```
 autovacuum_test=# UPDATE test_table SET data=data||'b'::text;UPDATE test_table SET data=data||'c'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'f'::text;SELECT * FROM test_table ORDER BY id LIMIT 10;SELECT relname, n_live_tup, n_dead_tup, trunc(100*n_dead_tup/(n_live_tup+1))::float "ratio%", last_autovacuum FROM pg_stat_user_TABLEs WHERE relname = 'test_table';
@@ -229,6 +230,7 @@ autovacuum_test=# SELECT relname, n_live_tup, n_dead_tup, trunc(100*n_dead_tup/(
 (1 row)
 ```
 *4.6.Пять раз обновить все строчки и добавить к каждой строчке любой символ*
+
 *4.7.Посмотреть размер файла с таблицей*
 ```
 autovacuum_test=# UPDATE test_table SET data=data||'g'::text;UPDATE test_table SET data=data||'e'::text;UPDATE test_table SET data=data||'f'::text;UPDATE test_table SET data=data||'h'::text;UPDATE test_table SET data=data||'j'::text;SELECT * FROM test_table ORDER BY id LIMIT 10;SELECT pg_size_pretty(pg_total_relation_size('test_table'));
@@ -262,6 +264,7 @@ autovacuum_test=# ALTER TABLE test_table SET (autovacuum_enabled = off);
 ALTER TABLE
 ```
 *4.9.Десять раз обновить все строчки и добавить к каждой строчке любой символ*
+
 *4.10.Посмотреть размер файла с таблицей*
 ```
 autovacuum_test=# UPDATE test_table SET data=data||'b'::text;UPDATE test_table SET data=data||'c'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'d'::text;UPDATE test_table SET data=data||'f'::text;UPDATE test_table SET data=data||'g'::text;UPDATE test_table SET data=data||'e'::text;UPDATE test_table SET data=data||'f'::text;UPDATE test_table SET data=data||'h'::text;UPDATE test_table SET data=data||'j'::text;SELECT * FROM test_table ORDER BY id LIMIT 10;SELECT relname, n_live_tup, n_dead_tup, trunc(100*n_dead_tup/(n_live_tup+1))::float "ratio%", last_autovacuum FROM pg_stat_user_TABLEs WHERE relname = 'test_table';SELECT pg_size_pretty(pg_total_relation_size('test_table'));
