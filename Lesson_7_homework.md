@@ -273,7 +273,24 @@ ssh-rsa@lesson7:~$ sudo pg_dropcluster 15 main --stop
 ssh-rsa@lesson7:~$ pg_lsclusters
 Ver Cluster Port Status Owner Data directory Log file
 
+ssh-rsa@lesson7:~$ sudo pg_createcluster 15 main start
 
+ssh-rsa@lesson7:~$ su postgres -c '/usr/lib/postgresql/15/bin/pg_checksums --enable -D "/var/lib/postgresql/15/main"'
+Password:
+could not change directory to "/home/ssh-rsa": Permission denied
+Checksum operation completed
+Files scanned:   946
+Blocks scanned:  2798
+Files written:  778
+Blocks written: 2798
+pg_checksums: syncing data directory
+pg_checksums: updating control file
+Checksums enabled in cluster
+
+ssh-rsa@lesson7:~$ sudo systemctl start postgresql
+ssh-rsa@lesson7:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
 ```
 *3.2.Создайте таблицу*
 ```
