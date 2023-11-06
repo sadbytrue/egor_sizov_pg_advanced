@@ -269,6 +269,10 @@ tps вырос с 590 до 2233 - примерно в 4 раза.
 # 3.Тестирование режима контрольной суммы таблицы
 *3.1.Создайте новый кластер с включенной контрольной суммой страниц*
 ```
+ssh-rsa@lesson7:~$ sudo pg_dropcluster 15 main --stop
+ssh-rsa@lesson7:~$ pg_lsclusters
+Ver Cluster Port Status Owner Data directory Log file
+
 
 ```
 *3.2.Создайте таблицу*
