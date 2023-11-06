@@ -122,12 +122,38 @@ db_for_pgbench=# select COUNT(*) from pg_buffercache;
 ```
 
 Размер одной страницы buffercashe = 8 КБ.
-Тогда объем buffercashe = 131 072 КБ = 128 Мб
+Тогда объем buffercashe = 131 072 КБ = 128 МБ.
+Или 6,4 МБ на одну точку checkpoint.
 
 # 2.Сравнение работы в синхронном и асинхронном режиме
 *2.1.Проверьте данные статистики: все ли контрольные точки выполнялись точно по расписанию*
 ```
 
+
+2023-11-06 07:53:08.322 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:53:35.009 UTC [17176] LOG:  checkpoint complete: wrote 1702 buffers (10.4%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.673 s, sync=0.004 s, total=26.688 s; sync files=54, longest=0.003 s, average=0.001 s; distan>2023-11-06 07:54:08.042 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:54:35.112 UTC [17176] LOG:  checkpoint complete: wrote 1850 buffers (11.3%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.987 s, sync=0.054 s, total=27.070 s; sync files=24, longest=0.015 s, average=0.003 s; distan>2023-11-06 07:54:38.115 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:55:05.158 UTC [17176] LOG:  checkpoint complete: wrote 1866 buffers (11.4%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.868 s, sync=0.142 s, total=27.044 s; sync files=15, longest=0.127 s, average=0.010 s; distan>2023-11-06 07:55:08.161 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:55:35.083 UTC [17176] LOG:  checkpoint complete: wrote 2014 buffers (12.3%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.878 s, sync=0.018 s, total=26.922 s; sync files=13, longest=0.009 s, average=0.002 s; distan>2023-11-06 07:55:38.086 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:56:05.106 UTC [17176] LOG:  checkpoint complete: wrote 2080 buffers (12.7%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.978 s, sync=0.020 s, total=27.020 s; sync files=14, longest=0.010 s, average=0.002 s; distan>2023-11-06 07:56:08.106 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:56:35.137 UTC [17176] LOG:  checkpoint complete: wrote 2040 buffers (12.5%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.964 s, sync=0.020 s, total=27.032 s; sync files=9, longest=0.008 s, average=0.003 s; distanc>2023-11-06 07:56:38.138 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:57:05.123 UTC [17176] LOG:  checkpoint complete: wrote 2118 buffers (12.9%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.906 s, sync=0.035 s, total=26.986 s; sync files=16, longest=0.027 s, average=0.003 s; distan>2023-11-06 07:57:08.126 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:57:35.122 UTC [17176] LOG:  checkpoint complete: wrote 2001 buffers (12.2%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.931 s, sync=0.042 s, total=26.996 s; sync files=10, longest=0.021 s, average=0.005 s; distan>2023-11-06 07:57:38.125 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:58:05.047 UTC [17176] LOG:  checkpoint complete: wrote 2115 buffers (12.9%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.872 s, sync=0.008 s, total=26.922 s; sync files=14, longest=0.008 s, average=0.001 s; distan>2023-11-06 07:58:08.050 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:58:35.061 UTC [17176] LOG:  checkpoint complete: wrote 1976 buffers (12.1%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.970 s, sync=0.018 s, total=27.011 s; sync files=9, longest=0.013 s, average=0.002 s; distanc>2023-11-06 07:58:38.064 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:59:05.081 UTC [17176] LOG:  checkpoint complete: wrote 2089 buffers (12.8%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.972 s, sync=0.027 s, total=27.018 s; sync files=16, longest=0.022 s, average=0.002 s; distan>2023-11-06 07:59:08.085 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:59:35.105 UTC [17176] LOG:  checkpoint complete: wrote 1973 buffers (12.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.964 s, sync=0.028 s, total=27.021 s; sync files=8, longest=0.019 s, average=0.004 s; distanc>2023-11-06 07:59:38.106 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:00:05.082 UTC [17176] LOG:  checkpoint complete: wrote 2102 buffers (12.8%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.890 s, sync=0.026 s, total=26.977 s; sync files=15, longest=0.013 s, average=0.002 s; distan>2023-11-06 08:00:08.085 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:00:35.144 UTC [17176] LOG:  checkpoint complete: wrote 1893 buffers (11.6%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.981 s, sync=0.035 s, total=27.060 s; sync files=9, longest=0.027 s, average=0.004 s; distanc>2023-11-06 08:00:38.147 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:01:05.159 UTC [17176] LOG:  checkpoint complete: wrote 2058 buffers (12.6%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.896 s, sync=0.040 s, total=27.012 s; sync files=11, longest=0.040 s, average=0.004 s; distan>2023-11-06 08:01:08.162 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:01:35.102 UTC [17176] LOG:  checkpoint complete: wrote 1936 buffers (11.8%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.894 s, sync=0.012 s, total=26.941 s; sync files=9, longest=0.007 s, average=0.002 s; distanc>
+2023-11-06 08:01:38.106 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:02:05.042 UTC [17176] LOG:  checkpoint complete: wrote 2275 buffers (13.9%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.886 s, sync=0.011 s, total=26.937 s; sync files=15, longest=0.011 s, average=0.001 s; distan>2023-11-06 08:02:08.045 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:02:35.059 UTC [17176] LOG:  checkpoint complete: wrote 1917 buffers (11.7%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.969 s, sync=0.019 s, total=27.014 s; sync files=7, longest=0.011 s, average=0.003 s; distanc>2023-11-06 08:02:38.062 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:03:05.073 UTC [17176] LOG:  checkpoint complete: wrote 2065 buffers (12.6%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.966 s, sync=0.016 s, total=27.011 s; sync files=14, longest=0.013 s, average=0.002 s; distan>2023-11-06 08:03:08.074 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:03:35.141 UTC [17176] LOG:  checkpoint complete: wrote 1955 buffers (11.9%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.976 s, sync=0.068 s, total=27.067 s; sync files=9, longest=0.057 s, average=0.008 s; distanc>2023-11-06 08:03:38.144 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:04:05.064 UTC [17176] LOG:  checkpoint complete: wrote 2267 buffers (13.8%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.882 s, sync=0.011 s, total=26.920 s; sync files=14, longest=0.011 s, average=0.001 s; distan>2023-11-06 08:04:38.097 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:05:05.112 UTC [17176] LOG:  checkpoint complete: wrote 1920 buffers (11.7%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.973 s, sync=0.012 s, total=27.016 s; sync files=13, longest=0.010 s, average=0.001 s; distan>
 ```
 *2.2.Почему так произошло?*
 
