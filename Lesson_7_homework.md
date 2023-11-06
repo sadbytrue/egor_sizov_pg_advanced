@@ -128,8 +128,11 @@ db_for_pgbench=# select COUNT(*) from pg_buffercache;
 # 2.Сравнение работы в синхронном и асинхронном режиме
 *2.1.Проверьте данные статистики: все ли контрольные точки выполнялись точно по расписанию*
 ```
-
-
+ssh-rsa@lesson7:~$ sudo -u  postgres nano /var/log/postgresql/postgresql-15-main.log
+2023-11-06 07:49:07.922 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:49:07.941 UTC [17176] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.003 s, total=0.019 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB>2023-11-06 07:50:38.006 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:51:05.036 UTC [17176] LOG:  checkpoint complete: wrote 925 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=26.997 s, sync=0.018 s, total=27.031 s; sync files=300, longest=0.014 s, average=0.001 s; distanc>2023-11-06 07:51:38.068 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 07:51:38.284 UTC [17176] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.203 s, sync=0.004 s, total=0.216 s; sync files=3, longest=0.003 s, average=0.002 s; distance=2 kB>
 2023-11-06 07:53:08.322 UTC [17176] LOG:  checkpoint starting: time
 2023-11-06 07:53:35.009 UTC [17176] LOG:  checkpoint complete: wrote 1702 buffers (10.4%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.673 s, sync=0.004 s, total=26.688 s; sync files=54, longest=0.003 s, average=0.001 s; distan>2023-11-06 07:54:08.042 UTC [17176] LOG:  checkpoint starting: time
 2023-11-06 07:54:35.112 UTC [17176] LOG:  checkpoint complete: wrote 1850 buffers (11.3%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.987 s, sync=0.054 s, total=27.070 s; sync files=24, longest=0.015 s, average=0.003 s; distan>2023-11-06 07:54:38.115 UTC [17176] LOG:  checkpoint starting: time
@@ -154,6 +157,10 @@ db_for_pgbench=# select COUNT(*) from pg_buffercache;
 2023-11-06 08:03:35.141 UTC [17176] LOG:  checkpoint complete: wrote 1955 buffers (11.9%); 0 WAL file(s) added, 0 removed, 2 recycled; write=26.976 s, sync=0.068 s, total=27.067 s; sync files=9, longest=0.057 s, average=0.008 s; distanc>2023-11-06 08:03:38.144 UTC [17176] LOG:  checkpoint starting: time
 2023-11-06 08:04:05.064 UTC [17176] LOG:  checkpoint complete: wrote 2267 buffers (13.8%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.882 s, sync=0.011 s, total=26.920 s; sync files=14, longest=0.011 s, average=0.001 s; distan>2023-11-06 08:04:38.097 UTC [17176] LOG:  checkpoint starting: time
 2023-11-06 08:05:05.112 UTC [17176] LOG:  checkpoint complete: wrote 1920 buffers (11.7%); 0 WAL file(s) added, 0 removed, 1 recycled; write=26.973 s, sync=0.012 s, total=27.016 s; sync files=13, longest=0.010 s, average=0.001 s; distan>
+2023-11-06 08:10:38.396 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:10:42.228 UTC [17176] LOG:  checkpoint complete: wrote 39 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=3.815 s, sync=0.006 s, total=3.833 s; sync files=34, longest=0.004 s, average=0.001 s; distance=16>2023-11-06 08:12:08.314 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:12:10.742 UTC [17176] LOG:  checkpoint complete: wrote 25 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.410 s, sync=0.007 s, total=2.428 s; sync files=21, longest=0.005 s, average=0.001 s; distance=13>2023-11-06 08:13:08.798 UTC [17176] LOG:  checkpoint starting: time
+2023-11-06 08:13:09.012 UTC [17176] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.201 s, sync=0.004 s, total=0.215 s; sync files=2, longest=0.004 s, average=0.002 s; distance=7 kB>
 ```
 *2.2.Почему так произошло?*
 
