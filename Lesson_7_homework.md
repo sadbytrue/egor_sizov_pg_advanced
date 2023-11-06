@@ -188,15 +188,83 @@ ssh-rsa@lesson7:~$ sudo -u  postgres nano /var/log/postgresql/postgresql-15-main
 ```
 *2.2.Почему так произошло?*
 
-
+Без нагрузки pgbench checkpoints не выполняются, т.к. отсутствует изменение буфера и нет грязных записей.
 
 *2.3.Сравните tps в синхронном/асинхронном режиме утилитой pgbench*
 ```
+ssh-rsa@lesson7:~$ cd /etc/postgresql/15/main
+ssh-rsa@lesson7:/etc/postgresql/15/main$ sudo -u  postgres nano postgresql.conf
 
+#------------------------------------------------------------------------------
+# WRITE-AHEAD LOG
+#------------------------------------------------------------------------------
+
+# - Settings -
+
+#wal_level = replica                    # minimal, replica, or logical
+                                        # (change requires restart)
+fsync = off                             # flush data to disk for crash safety
+                                        # (turning this off can cause
+                                        # unrecoverable data corruption)
+#synchronous_commit = on                # synchronization level;
+                                        # off, local, remote_write, remote_apply, or on
+#wal_sync_method = fsync                # the default is the first option
+                                        # supported by the operating system:
+                                        #   open_datasync
+                                        #   fdatasync (default on Linux and FreeBSD)
+                                        #   fsync
+                                        #   fsync_writethrough
+                                        #   open_sync
+#full_page_writes = on                  # recover from partial page writes
+#wal_log_hints = off                    # also do full page writes of non-critical updates
+                                        # (change requires restart)
+#wal_compression = off                  # enables compression of full-page writes;
+                                        # off, pglz, lz4, zstd, or on
+#wal_init_zero = on                     # zero-fill new WAL files
+#wal_recycle = on                       # recycle WAL files
+#wal_buffers = -1                       # min 32kB, -1 sets based on shared_buffers
+                                        # (change requires restart)
+#wal_writer_delay = 200ms               # 1-10000 milliseconds
+#wal_writer_flush_after = 1MB           # measured in pages, 0 disables
+#wal_skip_threshold = 2MB
+
+#commit_delay = 0                       # range 0-100000, in microseconds
+#commit_siblings = 5                    # range 1-1000
+
+ssh-rsa@lesson7:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main restart
+
+ssh-rsa@lesson7:/etc/postgresql/15/main$ pgbench -i -U postgres -h localhost -p 5432  db_for_pgbench
+Password:
+dropping old tables...
+creating tables...
+generating data (client-side)...
+100000 of 100000 tuples (100%) done (elapsed 0.03 s, remaining 0.00 s)
+vacuuming...
+creating primary keys...
+done in 0.15 s (drop tables 0.01 s, create tables 0.00 s, client-side generate 0.08 s, vacuum 0.03 s, primary keys 0.04 s).
+
+ssh-rsa@lesson7:/etc/postgresql/15/main$ pgbench -c8 -P 6 -T 600 -U postgres -h localhost -p 5432 db_for_pgbench
+Password:
+pgbench (15.4 (Ubuntu 15.4-2.pgdg22.04+1))
+<...>
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 1
+maximum number of tries: 1
+duration: 600 s
+number of transactions actually processed: 1340214
+number of failed transactions: 0 (0.000%)
+latency average = 3.580 ms
+latency stddev = 1.411 ms
+initial connection time = 95.430 ms
+tps = 2233.977174 (without initial connection time)
 ```
 *2.4.Объясните полученный результат*
 
-
+tps вырос с 590 до 2233 - примерно в 4 раза. 
+Это происходит, потому что изменена настройка fsync=true -> fsync=false, и postgres не ожидает физической записи на диск изменений и переходит к следующей записи в WAL.
 
 # 3.Тестирование режима контрольной суммы таблицы
 *3.1.Создайте новый кластер с включенной контрольной суммой страниц*
