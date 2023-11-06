@@ -294,32 +294,81 @@ Ver Cluster Port Status Owner    Data directory              Log file
 ```
 *3.2.Создайте таблицу*
 ```
+ssh-rsa@lesson7:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# CREATE TABLE tab_1 (i int);
+CREATE TABLE
 ```
 *3.3.Вставьте несколько значений*
 ```
+postgres=# INSERT INTO tab_1 VALUES (1),(2);
+INSERT 0 2
+postgres=# SELECT * FROM tab_1;
+ i
+---
+ 1
+ 2
+(2 rows)
 
+postgres=# SELECT pg_relation_filepath(oid), relpages FROM pg_class WHERE relname = 'tab_1';
+ pg_relation_filepath | relpages
+----------------------+----------
+ base/5/16388         |        0
+(1 row)
+
+postgres=# \q
 ```
 *3.4.Выключите кластер*
 ```
-
+ssh-rsa@lesson7:~$ sudo pg_ctlcluster 15 main stop
 ```
 *3.5.Измените пару байт в таблице*
 ```
-
+ssh-rsa@lesson7:~$ su postgres
+Password:
+postgres@lesson7:/home/ssh-rsa$ nano /var/lib/postgresql/15/main/base/5/16388
+postgres@lesson7:/home/ssh-rsa$
 ```
 *3.6.Включите кластер и сделайте выборку из таблицы*
 ```
+ssh-rsa@lesson7:~$ sudo pg_ctlcluster 15 main start
+ssh-rsa@lesson7:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.4 (Ubuntu 15.4-2.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# SELECT * FROM tab_1;
+WARNING:  page verification failed, calculated checksum 48177 but expected 50461
+ERROR:  invalid page in block 0 of relation base/5/16388
 ```
 *3.7.Что и почему произошло?*
 
-
+Данные в файле поменялись и не совпадают с контрольной суммой для страницы.
 
 *3.8.Как проигнорировать ошибку и продолжить работу?*
 
+Установить флаг ignore_checksum_failure
 
+```
+postgres=# SET ignore_checksum_failure=on;
+SET
+postgres=# SELECT * FROM tab_1;
+WARNING:  page verification failed, calculated checksum 48177 but expected 50461
+ i
+---
+(0 rows)
+
+postgres=# INSERT INTO tab_1 VALUES (1);
+INSERT 0 1
+postgres=# SELECT * FROM tab_1;
+ i
+---
+ 1
+(1 row)
 
 ```
 
-```
+Прошлые данные потерялись, т.к. символы были вставлены в случайное место таблицы. Предполагаю, если вставить символы вместо значений стобцов в строках, то старые данные могут остаться
