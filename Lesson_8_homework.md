@@ -94,18 +94,62 @@ ssh-rsa@lesson8:~$ sudo -u  postgres nano /var/log/postgresql/postgresql-15-main
 2023-11-11 19:46:09.062 UTC [6272] postgres@postgres STATEMENT:  UPDATE blocks SET data = '2';
 ```
 # 2.Блокировка при обновлении одной и той же строки в разных транзакциях
+*2.0.Создаем необходимые расширения и полезные view*
+```
+postgres=# CREATE EXTENSION pageinspect;
+CREATE EXTENSION
+postgres=# CREATE EXTENSION pgrowlocks;
+CREATE EXTENSION
+postgres=# CREATE VIEW locks_v AS
+SELECT pid,
+       locktype,
+       CASE locktype
+         WHEN 'relation' THEN relation::regclass::text
+         WHEN 'transactionid' THEN transactionid::text
+         WHEN 'tuple' THEN relation::regclass::text||':'||tuple::text
+       END AS lockid,
+       mode,
+       granted
+FROM pg_locks
+WHERE locktype in ('relation','transactionid','tuple')
+AND (locktype != 'relation' OR relation = 'blocks'::regclass);
+CREATE VIEW
+postgres=# CREATE VIEW blocks_v AS
+postgres-# SELECT '(0,'||lp||')' AS ctid,
+postgres-#        t_xmax as xmax,
+postgres-#        CASE WHEN (t_infomask & 128) > 0   THEN 't' END AS lock_only,
+    CASE postgres-#        CASE WHEN (t_infomask & 4096) > 0  THEN 't' END AS is_multi,
+postgres-#        CASE WHEN (t_infomask2 & 8192) > 0 THEN 't' END AS keys_upd,
+postgres-#        CASE WHEN (t_infomask & 16) > 0 THEN 't' END AS keyshr_lock,
+postgres-#        CASE WHEN (t_infomask & 16+64) = 16+64 THEN 't' END AS shr_lock
+postgres-# FROM heap_page_items(get_raw_page('blocks',0))
+postgres-# ORDER BY lp;
+CREATE VIEW
+```
 *2.1.Смоделируйте ситуацию обновления одной и той же строки тремя командами UPDATE в разных сеансах*
-```
-
-```
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_19.png)
 *2.2.Изучите возникшие блокировки в представлении pg_locks и убедитесь, что все они понятны*
 ```
-
+postgres=*# SELECT * FROM locks_v ORDER BY pid, locktype;
+ pid  |   locktype    |  lockid  |       mode       | granted
+------+---------------+----------+------------------+---------
+ 6974 | relation      | blocks   | RowExclusiveLock | t
+ 6974 | transactionid | 743      | ExclusiveLock    | t
+ 7042 | relation      | blocks   | RowExclusiveLock | t
+ 7042 | transactionid | 743      | ShareLock        | f
+ 7042 | transactionid | 744      | ExclusiveLock    | t
+ 7042 | tuple         | blocks:3 | ExclusiveLock    | t
+ 7122 | relation      | blocks   | RowExclusiveLock | t
+ 7122 | transactionid | 745      | ExclusiveLock    | t
+ 7122 | tuple         | blocks:3 | ExclusiveLock    | f
+(9 rows)
 ```
 *2.3.Пришлите список блокировок и объясните, что значит каждая*
-```
 
-```
+Первая транзакция с pid=6974 удерживает блокировку таблицы (строка 1) и собственного номера (строка 2).
+Вторая транзакция с pid=7042 аналогично удерживает блокировку таблицы (строка 3) и собственного номера (строка 5). Также транзакция заблокировала версию строки (строка 6), но столкнулась с блокировкой строки от первой транзакции (строка 4).
+У третьей транзакции на блокировку строки меньше, т.к. она повисла из-за блокировки версии строки второй транзакции (строка 9) и не дошла до проверки блокировки строки.
+
 # 3.Dead lock
 *3.1.Воспроизведите взаимоблокировку трех транзакций*
 ```
