@@ -151,10 +151,24 @@ postgres=*# SELECT * FROM locks_v ORDER BY pid, locktype;
 У третьей транзакции на блокировку строки меньше, т.к. она повисла из-за блокировки версии строки второй транзакции (строка 9) и не дошла до проверки блокировки строки.
 
 # 3.Dead lock
-*3.1.Воспроизведите взаимоблокировку трех транзакций*
+*3.0.Подготовим новую таблицу*
 ```
+postgres=# CREATE TABLE blocks_1 (i integer, data integer);
+CREATE TABLE
+postgres=# INSERT INTO blocks_1 VALUES (1,2),(2,2),(3,2);
+INSERT 0 3
+postgres=# ALTER SYSTEM SET deadlock_timeout = 60000;
+ALTER SYSTEM
+postgres=# SELECT pg_reload_conf();
+ pg_reload_conf
+----------------
+ t
+(1 row)
 
 ```
+*3.1.Воспроизведите взаимоблокировку трех транзакций*
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_22.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_23.png)
 *3.2.Можно ли разобраться в ситуации постфактум, изучая журнал сообщений?*
 ```
 
