@@ -167,12 +167,55 @@ postgres=# SELECT pg_reload_conf();
 
 ```
 *3.1.Воспроизведите взаимоблокировку трех транзакций*
+```
+--Сессия 1 перевод со счета 1 на счет 2
+--Сессия 2 перевод со счета 2 на счет 3
+--Сессия 3 перевод со счета 3 на счет 1
+
+--Сессия 1 вычитаем со счета 1
+BEGIN;
+SELECT txid_current(), pg_backend_pid();
+UPDATE blocks_1 SET data=data-1 WHERE i=1;
+
+--Сессия 2 вычитаем со счета 2
+BEGIN;
+SELECT txid_current(), pg_backend_pid();
+UPDATE blocks_1 SET data=data-1 WHERE i=2;
+
+--Сессия 3 вычитаем со счета 3
+BEGIN;
+SELECT txid_current(), pg_backend_pid();
+UPDATE blocks_1 SET data=data-1 WHERE i=3;
+
+--Сессия 1 прибавляем к счету 2
+UPDATE blocks_1 SET data=data+1 WHERE i=2;
+
+--Сессия 2 прибавляем к счету 3
+UPDATE blocks_1 SET data=data+1 WHERE i=3;
+
+--Сессия 3 прибавляем к счету 1
+UPDATE blocks_1 SET data=data+1 WHERE i=1;
+```
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_22.png)
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_23.png)
 *3.2.Можно ли разобраться в ситуации постфактум, изучая журнал сообщений?*
 ```
+ssh-rsa@lesson8:~$ sudo -u  postgres nano /var/log/postgresql/postgresql-15-main.log
 
+2023-11-12 12:27:42.747 UTC [1345] postgres@postgres ERROR:  deadlock detected
+2023-11-12 12:27:42.747 UTC [1345] postgres@postgres DETAIL:  Process 1345 waits for ShareLock on transaction 759; blocked by process 1280.
+        Process 1280 waits for ShareLock on transaction 760; blocked by process 1284.
+        Process 1284 waits for ShareLock on transaction 758; blocked by process 1345.
+        Process 1345: UPDATE blocks_1 SET data=data+1 WHERE i=2;
+        Process 1280: UPDATE blocks_1 SET data=data+1 WHERE i=3;
+        Process 1284: UPDATE blocks_1 SET data=data+1 WHERE i=1;
+2023-11-12 12:27:42.747 UTC [1345] postgres@postgres HINT:  See server log for query details.
+2023-11-12 12:27:42.747 UTC [1345] postgres@postgres CONTEXT:  while updating tuple (0,9) in relation "blocks_1"
+2023-11-12 12:27:42.747 UTC [1345] postgres@postgres STATEMENT:  UPDATE blocks_1 SET data=data+1 WHERE i=2;
 ```
+
+Да, сообщение которое мы видели в транзакции записалось и в лог-файл
+
 # 4.Взаимная блокировка при UPDATE таблицы в двух транзакциях
 *4.1.Могут ли две транзакции, выполняющие единственную команду UPDATE одной и той же таблицы (без where), заблокировать друг друга?*
 ```
