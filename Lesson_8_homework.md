@@ -220,9 +220,22 @@ ssh-rsa@lesson8:~$ sudo -u  postgres nano /var/log/postgresql/postgresql-15-main
 *4.1.Могут ли две транзакции, выполняющие единственную команду UPDATE одной и той же таблицы (без where), заблокировать друг друга?*
 ```
 --Подготовка
-
---Сессия 1
-
---Сессия 2
-
+postgres=# CREATE TABLE test_table (id serial, data integer);
+CREATE TABLE
+postgres=# INSERT INTO test_table(data) SELECT * FROM generate_series(1,10000000);
+INSERT 0 10000000
 ```
+```
+--Сессия 1
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+UPDATE test_table SET data = (SELECT id FROM test_table ORDER BY id ASC LIMIT 1 FOR UPDATE);
+```
+```
+--Сессия 2
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+UPDATE test_table SET data = (SELECT id FROM test_table ORDER BY id DESC LIMIT 1 FOR UPDATE);
+```
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_26.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_27.png)
+
+Транзакции выполнялись до тех пор, пока не начали обновлять одну и ту же строку примерно в середине таблицы. Тогда образовался deadlock, который был разорван postgres.
