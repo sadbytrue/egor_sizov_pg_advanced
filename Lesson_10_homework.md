@@ -103,9 +103,86 @@ test_backup=# SELECT * FROM test_backup_schema.test_from_backup ORDER BY i LIMIT
 # 4.Бэкапирование и восстановление с помощью pg_dump, pg_restore
 *4.1.Используя утилиту pg_dump создадим бэкап в кастомном сжатом формате двух таблиц*
 ```
-
+ssh-rsa@lesson10:~$ cd /backup_copy
+ssh-rsa@lesson10:/backup_copy$ sudo passwd postgres
+New password:
+Retype new password:
+passwd: password updated successfully
+ssh-rsa@lesson10:/backup_copy$ su postgres
+Password:
+postgres@lesson10:/backup_copy$ rm *
+postgres@lesson10:/backup_copy$ ls
+postgres@lesson10:/backup_copy$ pg_dump -d test_backup --create -t 'test_backup_schema.test_from_backup' -t 'test_backup_schema.test' -Fc | gzip > /backup_copy/backup_pg_dump.gz
+postgres@lesson10:/backup_copy$ ls
+backup_pg_dump.gz
+postgres@lesson10:/backup_copy$ exit
 ```
 *4.2.Используя утилиту pg_restore восстановим в новую БД ТОЛЬКО вторую таблицу*
 ```
+ssh-rsa@lesson10:/backup_copy$ sudo -u postgres psql
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE test_backup_restore;
+CREATE DATABASE
+postgres=# \q
+
+postgres@lesson10:/backup_copy$ cat backup_pg_dump.gz | gunzip > backup_pg_dump.dump
+postgres@lesson10:/backup_copy$ ls
+backup_pg_dump.dump  backup_pg_dump.gz
+pg_restore -d test_backup_restore -n 'test_backup_schema' -t 'test_backup_schema.test_from_backup' -Fc /backup_copy/backup_pg_dump.dump
+
+postgres@lesson10:/backup_copy$ psql
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# \c test_backup_restore
+You are now connected to database "test_backup_restore" as user "postgres".
+test_backup_restore=# \dn
+      List of schemas
+  Name  |       Owner
+--------+-------------------
+ public | pg_database_owner
+(1 row)
+
+test_backup_restore=# \dt
+Did not find any relations.
+test_backup_restore=# SELECT * FROM test_backup_schema.test_from_backup;
+ERROR:  relation "test_backup_schema.test_from_backup" does not exist
+LINE 1: SELECT * FROM test_backup_schema.test_from_backup;
+```
+
+Таблица не восстановилась. Пробую вручную создать схему в целевой БД и снова восстановить таблицу
+
+```
+test_backup_restore=# CREATE SCHEMA test_backup_schema;
+CREATE SCHEMA
+test_backup_restore=# \q
+postgres@lesson10:/backup_copy$ pg_restore -d test_backup_restore -t 'test_backup_schema.test_from_backup' -Fc /backup_copy/backup_pg_dump.dump
+postgres@lesson10:/backup_copy$ psql
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# SELECT * FROM test_backup_schema.test_from_backup;
+ERROR:  relation "test_backup_schema.test_from_backup" does not exist
+LINE 1: SELECT * FROM test_backup_schema.test_from_backup;
+```
+
+Все равно не восстановилась. Помогло убрать указание схемы перед именем таблицы
+
+```
+postgres@lesson10:/backup_copy$ pg_restore -d test_backup_restore -U postgres -n 'test_backup_schema' -t 'test_from_backup' -Fc /backup_copy/backup_pg_dump.dump
+
+postgres@lesson10:/backup_copy$ psql
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# \c test_backup_restore
+You are now connected to database "test_backup_restore" as user "postgres".
+test_backup_restore=# SELECT count (*) FROM test_backup_schema.test_from_backup;
+ count
+-------
+   100
+(1 row)
 
 ```
