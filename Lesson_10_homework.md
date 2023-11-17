@@ -38,15 +38,45 @@ CREATE TABLE
 ```
 test_backup=# INSERT INTO test_backup_schema.test(i) SELECT * FROM generate_series(1,100);
 INSERT 0 100
+test_backup=# \q
 ```
 # 3.Настройка и осуществление логического бэкапирования и восстановления
 *3.1.Под линукс пользователем Postgres создадим каталог для бэкапов*
 ```
-
+ssh-rsa@lesson10:~$ pwd
+/home/ssh-rsa
+ssh-rsa@lesson10:~$ mkdir -p backup_copy
+ssh-rsa@lesson10:~$ ls
+backup_copy
+ssh-rsa@lesson10:~$ sudo chown -R postgres:postgres /home/ssh-rsa/backup_copy
 ```
 *3.2.Сделаем логический бэкап используя утилиту COPY*
 ```
+ssh-rsa@lesson10:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# \c test_backup
+You are now connected to database "test_backup" as user "postgres".
+test_backup=# \copy test_backup_schema.test to '/home/ssh-rsa/backup_copy/test_backup_17_11_2023.sql';
+/home/ssh-rsa/backup_copy/test_backup_17_11_2023.sql: Permission denied
+```
+
+Не хватает прав на папку (об этом написано при подключении к psql), надо вернуться к п. 3.1 и создать директорию в корне файловой системы.
+
+```
+ssh-rsa@lesson10:~$ sudo mkdir -p /backup_copy
+ssh-rsa@lesson10:~$ sudo chown -R postgres:postgres /backup_copy
+ssh-rsa@lesson10:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# \c test_backup
+You are now connected to database "test_backup" as user "postgres".
+test_backup=# \copy test_backup_schema.test to '/backup_copy/test_backup_17_11_2023.sql';
+COPY 100
 ```
 *3.3.Восстановим во 2 таблицу данные из бэкапа*
 ```
