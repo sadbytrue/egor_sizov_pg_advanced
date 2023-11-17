@@ -80,6 +80,24 @@ COPY 100
 ```
 *3.3.Восстановим во 2 таблицу данные из бэкапа*
 ```
+CREATE TABLE test_backup_schema.test_from_backup (i int);
+CREATE TABLE
+test_backup=# \copy test_backup_schema.test_from_backup from '/backup_copy/test_backup_17_11_2023.sql';
+COPY 100
+test_backup=# SELECT * FROM test_backup_schema.test_from_backup ORDER BY i LIMIT 10;
+ i
+----
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+(10 rows)
 
 ```
 # 4.Бэкапирование и восстановление с помощью pg_dump, pg_restore
