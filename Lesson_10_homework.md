@@ -1,24 +1,43 @@
 # 1.Создание виртуальной машины и кластера PostgreSQL с настройками по умолчанию
 *1.1.Создаем ВМ/докер c ПГ*
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_16.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_28.png)
 ```
 PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
-PS C:\Users\Egor> ssh ssh-rsa@51.250.80.65
-The authenticity of host '51.250.80.65 (51.250.80.65)' can't be established.
-ECDSA key fingerprint is SHA256:vg5QOyopgy35zPOUo2nHpdxIFqxavrMV4o7aypxhDY0.
+PS C:\Users\Egor> ssh ssh-rsa@158.160.97.155
+The authenticity of host '158.160.97.155 (158.160.97.155)' can't be established.
+ECDSA key fingerprint is SHA256:3soyYhP9XttF7xJM+O+0rDk3y2slxKTCNOLxuN68GuY.
 Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '51.250.80.65' (ECDSA) to the list of known hosts.
+Warning: Permanently added '158.160.97.155' (ECDSA) to the list of known hosts.
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-88-generic x86_64)
+
+ssh-rsa@lesson10:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
+
+ssh-rsa@lesson10:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
 ```
 # 2.Создание БД со схемой и таблицу с данными
 *2.1.Создаем БД, схему и в ней таблицу*
 ```
+ssh-rsa@lesson10:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# CREATE DATABASE test_backup;
+CREATE DATABASE
+postgres=# \c test_backup
+You are now connected to database "test_backup" as user "postgres".
+test_backup=# CREATE SCHEMA test_backup_schema;
+CREATE SCHEMA
+test_backup=# CREATE TABLE test_backup_schema.test (i integer);
+CREATE TABLE
 ```
 *2.2.Заполним таблицу автосгенерированными 100 записями*
 ```
-
+test_backup=# INSERT INTO test_backup_schema.test(i) SELECT * FROM generate_series(1,100);
+INSERT 0 100
 ```
 # 3.Настройка и осуществление логического бэкапирования и восстановления
 *3.1.Под линукс пользователем Postgres создадим каталог для бэкапов*
