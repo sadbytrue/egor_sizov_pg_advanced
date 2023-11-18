@@ -219,5 +219,180 @@ tps = 1513.558921 (without initial connection time)
 # 3.Задание со звездочкой
 *3.1.Аналогично протестировать через утилиту https://github.com/Percona-Lab/sysbench-tpcc (требует установки https://github.com/akopytov/sysbench)*
 ```
+ssh-rsa@lesson9:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# DROP DATABASE db_for_pgbench;
+DROP DATABASE
+postgres=# CREATE DATABASE db_for_pgbench;
+CREATE DATABASE
+postgres=# \c db_for_pgbench
+You are now connected to database "db_for_pgbench" as user "postgres".
+db_for_pgbench=# ALTER ROLE postgres WITH PASSWORD 'postgres';
+ALTER ROLE
+db_for_pgbench=# \q
+
+ssh-rsa@lesson9:~$ wget -qO - https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | sudo bash
+Detected operating system as Ubuntu/jammy.
+Checking for curl...
+Detected curl...
+Checking for gpg...
+Detected gpg...
+Detected apt version as 2.4.11
+Running apt-get update... done.
+Installing apt-transport-https... done.
+Installing /etc/apt/sources.list.d/akopytov_sysbench.list...done.
+Importing packagecloud gpg key... Packagecloud gpg key imported to /etc/apt/keyrings/akopytov_sysbench-archive-keyring.gpg
+done.
+Running apt-get update... done.
+
+The repository is setup! You can now install packages.
+ssh-rsa@lesson9:~$ sudo apt install -y sysbench
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  libluajit-5.1-2 libluajit-5.1-common libmysqlclient21 mysql-common
+The following NEW packages will be installed:
+  libluajit-5.1-2 libluajit-5.1-common libmysqlclient21 mysql-common sysbench
+0 upgraded, 5 newly installed, 0 to remove and 0 not upgraded.
+Need to get 1,711 kB of archives.
+After this operation, 8,056 kB of additional disk space will be used.
+Get:1 http://mirror.yandex.ru/ubuntu jammy/universe amd64 libluajit-5.1-common all 2.1.0~beta3+dfsg-6 [44.3 kB]
+Get:2 http://mirror.yandex.ru/ubuntu jammy/universe amd64 libluajit-5.1-2 amd64 2.1.0~beta3+dfsg-6 [238 kB]
+Get:3 http://mirror.yandex.ru/ubuntu jammy/main amd64 mysql-common all 5.8+1.0.8 [7,212 B]
+Get:4 http://mirror.yandex.ru/ubuntu jammy-updates/main amd64 libmysqlclient21 amd64 8.0.35-0ubuntu0.22.04.1 [1,301 kB]
+Get:5 http://mirror.yandex.ru/ubuntu jammy/universe amd64 sysbench amd64 1.0.20+ds-2 [120 kB]
+Fetched 1,711 kB in 0s (28.3 MB/s)
+Selecting previously unselected package libluajit-5.1-common.
+(Reading database ... 112364 files and directories currently installed.)
+Preparing to unpack .../libluajit-5.1-common_2.1.0~beta3+dfsg-6_all.deb ...
+Unpacking libluajit-5.1-common (2.1.0~beta3+dfsg-6) ...
+Selecting previously unselected package libluajit-5.1-2:amd64.
+Preparing to unpack .../libluajit-5.1-2_2.1.0~beta3+dfsg-6_amd64.deb ...
+Unpacking libluajit-5.1-2:amd64 (2.1.0~beta3+dfsg-6) ...
+Selecting previously unselected package mysql-common.
+Preparing to unpack .../mysql-common_5.8+1.0.8_all.deb ...
+Unpacking mysql-common (5.8+1.0.8) ...
+Selecting previously unselected package libmysqlclient21:amd64.
+Preparing to unpack .../libmysqlclient21_8.0.35-0ubuntu0.22.04.1_amd64.deb ...
+Unpacking libmysqlclient21:amd64 (8.0.35-0ubuntu0.22.04.1) ...
+Selecting previously unselected package sysbench.
+Preparing to unpack .../sysbench_1.0.20+ds-2_amd64.deb ...
+Unpacking sysbench (1.0.20+ds-2) ...
+Setting up mysql-common (5.8+1.0.8) ...
+update-alternatives: using /etc/mysql/my.cnf.fallback to provide /etc/mysql/my.cnf (my.cnf) in auto mode
+Setting up libmysqlclient21:amd64 (8.0.35-0ubuntu0.22.04.1) ...
+Setting up libluajit-5.1-common (2.1.0~beta3+dfsg-6) ...
+Setting up libluajit-5.1-2:amd64 (2.1.0~beta3+dfsg-6) ...
+Setting up sysbench (1.0.20+ds-2) ...
+Processing triggers for man-db (2.10.2-1) ...
+Processing triggers for libc-bin (2.35-0ubuntu3.4) ...
+Scanning processes...
+Scanning candidates...
+Scanning linux images...
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+Service restarts being deferred:
+ systemctl restart unattended-upgrades.service
+Service restarts being deferred:
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+ssh-rsa@lesson9:~$ sysbench --version
+sysbench 1.0.20
+
+ssh-rsa@lesson9:~$ sudo apt -y install libpq-dev
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  libssl-dev
+Suggested packages:
+  postgresql-doc-16 libssl-doc
+The following NEW packages will be installed:
+  libpq-dev libssl-dev
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 2,515 kB of archives.
+After this operation, 13.0 MB of additional disk space will be used.
+Get:1 http://mirror.yandex.ru/ubuntu jammy-updates/main amd64 libssl-dev amd64 3.0.2-0ubuntu1.12 [2,373 kB]
+Get:2 http://apt.postgresql.org/pub/repos/apt jammy-pgdg/main amd64 libpq-dev amd64 16.1-1.pgdg22.04+1 [142 kB]
+Fetched 2,515 kB in 0s (15.4 MB/s)
+Selecting previously unselected package libssl-dev:amd64.
+(Reading database ... 112183 files and directories currently installed.)
+Preparing to unpack .../libssl-dev_3.0.2-0ubuntu1.12_amd64.deb ...
+Unpacking libssl-dev:amd64 (3.0.2-0ubuntu1.12) ...
+Selecting previously unselected package libpq-dev.
+Preparing to unpack .../libpq-dev_16.1-1.pgdg22.04+1_amd64.deb ...
+Unpacking libpq-dev (16.1-1.pgdg22.04+1) ...
+Setting up libssl-dev:amd64 (3.0.2-0ubuntu1.12) ...
+Setting up libpq-dev (16.1-1.pgdg22.04+1) ...
+Processing triggers for man-db (2.10.2-1) ...
+Scanning processes...
+Scanning candidates...
+Scanning linux images...
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+ systemctl restart packagekit.service
+ systemctl restart packagekit.service
+Service restarts being deferred:
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+
+ssh-rsa@lesson91:~$ git clone https://github.com/Percona-Lab/sysbench-tpcc.git
+Cloning into 'sysbench-tpcc'...
+remote: Enumerating objects: 226, done.
+remote: Counting objects: 100% (58/58), done.
+remote: Compressing objects: 100% (26/26), done.
+remote: Total 226 (delta 32), reused 52 (delta 32), pack-reused 168
+Receiving objects: 100% (226/226), 77.81 KiB | 996.00 KiB/s, done.
+Resolving deltas: 100% (120/120), done.
+ssh-rsa@lesson91:~$ ls
+sysbench-tpcc
+ssh-rsa@lesson91:~$ cd sysbench-tpcc
+
+ssh-rsa@lesson9:~/sysbench-tpcc$ ./tpcc.lua --pgsql-user=postgres --pgsql-password=postgres  --pgsql-db=db_for_pgbench --time=600 --threads=10 --ta
+bles=10 --scale=1 --db-driver=pgsql prepare
+
+ssh-rsa@lesson9:~/sysbench-tpcc$ ./tpcc.lua --pgsql-user=postgres --pgsql-password=postgres  --pgsql-db=db_for_pgbench --time=600 --threads=10 --tables=10 --scale=1 --db-driver=pgsql run
+SQL statistics:
+    queries performed:
+        read:                            2190919
+        write:                           2264961
+        other:                           366600
+        total:                           4822480
+    transactions:                        164572 (274.26 per sec.)
+    queries:                             4822480 (8036.56 per sec.)
+    ignored errors:                      19399  (32.33 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          600.0659s
+    total number of events:              164572
+
+Latency (ms):
+         min:                                    0.60
+         avg:                                   36.46
+         max:                                 3661.22
+         95th percentile:                       90.78
+         sum:                              5999792.84
+
+Threads fairness:
+    events (avg/stddev):           16457.2000/113.98
+    execution time (avg/stddev):   599.9793/0.02
 ```
