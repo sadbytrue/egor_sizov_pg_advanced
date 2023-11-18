@@ -103,8 +103,47 @@ wal_recycle = on
 # https://www.cybertec-postgresql.com
 # for more professional expertise.
 ```
+
+Помещу полученный конфиг в конец файла postgresql.conf и перезапущу инстанс
+
+```
+ssh-rsa@lesson9:~$ cd /etc/postgresql/15/main
+ssh-rsa@lesson9:/etc/postgresql/15/main$ sudo nano postgresql.conf
+ssh-rsa@lesson9:~$ sudo pg_ctlcluster 15 main restart
+```
 *2.2.Нагрузить кластер через утилиту через утилиту pgbench*
 ```
+ssh-rsa@lesson9:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE db_for_pgbench;
+CREATE DATABASE
+postgres=# \c db_for_pgbench
+You are now connected to database "db_for_pgbench" as user "postgres".
+db_for_pgbench=# ALTER ROLE postgres WITH PASSWORD 'postgres';
+ALTER ROLE
+db_for_pgbench=# \q
+
+ssh-rsa@lesson9:~$ pgbench -i -U postgres -h localhost -p 5432  db_for_pgbench
+Password:
+dropping old tables...
+NOTICE:  table "pgbench_accounts" does not exist, skipping
+NOTICE:  table "pgbench_branches" does not exist, skipping
+NOTICE:  table "pgbench_history" does not exist, skipping
+NOTICE:  table "pgbench_tellers" does not exist, skipping
+creating tables...
+generating data (client-side)...
+100000 of 100000 tuples (100%) done (elapsed 0.03 s, remaining 0.00 s)
+vacuuming...
+creating primary keys...
+done in 1.08 s (drop tables 0.00 s, create tables 0.00 s, client-side generate 0.90 s, vacuum 0.04 s, primary keys 0.14 s).
+
+ssh-rsa@lesson9:~$ pgbench -c 50 -j 2 -P 60 -T 600 -U postgres -h localhost -p 5432 db_for_pgbench
+Password:
+pgbench (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+
 
 ```
 *2.3.Написать какого значения tps удалось достичь, показать какие параметры в какие значения устанавливали и почему*
