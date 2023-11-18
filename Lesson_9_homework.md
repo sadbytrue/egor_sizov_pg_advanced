@@ -104,6 +104,11 @@ wal_recycle = on
 # for more professional expertise.
 ```
 
+Из основных параметров: 
+shared_buffers - общая память для работы с данными для чтения/записи. Увеличена относительно стандартной.
+work_mem - количество используемой памяти для подключений. Выше стандартной.
+maintenance_work_mem - объем памяти для системных операций. Выше стандартной.
+
 Помещу полученный конфиг в конец файла postgresql.conf и перезапущу инстанс
 
 ```
@@ -144,12 +149,73 @@ ssh-rsa@lesson9:~$ pgbench -c 50 -j 2 -P 60 -T 600 -U postgres -h localhost -p 5
 Password:
 pgbench (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
 
-
+scaling factor: 1
+query mode: simple
+number of clients: 50
+number of threads: 2
+maximum number of tries: 1
+duration: 600 s
+number of transactions actually processed: 897947
+number of failed transactions: 0 (0.000%)
+latency average = 33.376 ms
+latency stddev = 23.979 ms
+initial connection time = 631.641 ms
+tps = 1497.817877 (without initial connection time)
 ```
+
+Полученный tps=1498
+
 *2.3.Написать какого значения tps удалось достичь, показать какие параметры в какие значения устанавливали и почему*
-```
+
+Т.к. согласно условию для нас не важна надежность при аварийной остановке, то можем понизить wal_level до minimal, чтобы писать минимум в журнал предзаписи и ряд операций шли в обходн его.
 
 ```
+wal_level = minimal # consider using at least 'replica'
+```
+
+Также можем выставить synchronous_commit и fsync в off, чтобы не дожидаясь физической записи WAL на диск
+
+```
+synchronous_commit = off
+fsync = off
+```
+
+Запишем новые значения параметра, перезапустим кластер и снова протестируем с помощью pgbench
+
+```
+ssh-rsa@lesson9:~$ cd /etc/postgresql/15/main
+ssh-rsa@lesson9:/etc/postgresql/15/main$ sudo nano postgresql.conf
+ssh-rsa@lesson9:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main restart
+
+ssh-rsa@lesson9:/etc/postgresql/15/main$ pgbench -i -U postgres -h localhost -p 5432  db_for_pgbench
+Password:
+dropping old tables...
+creating tables...
+generating data (client-side)...
+100000 of 100000 tuples (100%) done (elapsed 0.03 s, remaining 0.00 s)
+vacuuming...
+creating primary keys...
+done in 0.39 s (drop tables 0.03 s, create tables 0.01 s, client-side generate 0.22 s, vacuum 0.04 s, primary keys 0.09 s).
+ssh-rsa@lesson9:/etc/postgresql/15/main$ pgbench -c 50 -j 2 -P 60 -T 600 -U postgres -h localhost -p 5432 db_for_pgbench
+Password:
+pgbench (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+
+scaling factor: 1
+query mode: simple
+number of clients: 50
+number of threads: 2
+maximum number of tries: 1
+duration: 600 s
+number of transactions actually processed: 907425
+number of failed transactions: 0 (0.000%)
+latency average = 33.029 ms
+latency stddev = 23.684 ms
+initial connection time = 602.445 ms
+tps = 1513.558921 (without initial connection time)
+```
+
+Полученный tps=1513
+
 # 3.Задание со звездочкой
 *3.1.Аналогично протестировать через утилиту https://github.com/Percona-Lab/sysbench-tpcc (требует установки https://github.com/akopytov/sysbench)*
 ```
