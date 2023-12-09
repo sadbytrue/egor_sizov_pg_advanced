@@ -121,9 +121,66 @@ test_db=# EXPLAIN SELECT * FROM authors_characteristics WHERE characteristic_tsv
 ```
 *1.5. Реализовать индекс на часть таблицы или индекс на поле с функцией*
 ```
+-- На часть таблицы
+test_db=# CREATE INDEX int_value_index ON test_table (int_value) WHERE int_value<=10;
+CREATE INDEX
+test_db=# EXPLAIN SELECT * FROM test_table WHERE int_value=3;
+                                    QUERY PLAN
+-----------------------------------------------------------------------------------
+ Index Scan using int_value_index on test_table  (cost=0.14..8.15 rows=1 width=24)
+   Index Cond: (int_value = 3)
+(2 rows)
+
+test_db=# EXPLAIN SELECT * FROM test_table WHERE int_value=13;
+                         QUERY PLAN
+------------------------------------------------------------
+ Seq Scan on test_table  (cost=0.00..30.50 rows=1 width=24)
+   Filter: (int_value = 13)
+(2 rows)
+
+-- На функцию
+test_db=# EXPLAIN SELECT * FROM test_table WHERE trim(both from char_value,'a')='1';
+                          QUERY PLAN
+--------------------------------------------------------------
+ Seq Scan on test_table  (cost=0.00..33.00 rows=5 width=24)
+   Filter: (TRIM(BOTH 'a'::text FROM char_value) = '1'::text)
+(2 rows)
+
+test_db=# CREATE INDEX char_value_trim_index ON test_table (trim(both from char_value,'a'));
+CREATE INDEX
+test_db=# EXPLAIN SELECT * FROM test_table WHERE trim(both from char_value,'a')='1';
+                                     QUERY PLAN
+------------------------------------------------------------------------------------
+ Bitmap Heap Scan on test_table  (cost=4.31..16.48 rows=5 width=24)
+   Recheck Cond: (TRIM(BOTH 'a'::text FROM char_value) = '1'::text)
+   ->  Bitmap Index Scan on char_value_trim_index  (cost=0.00..4.31 rows=5 width=0)
+         Index Cond: (TRIM(BOTH 'a'::text FROM char_value) = '1'::text)
+(4 rows)
 
 ```
 *1.6. Создать индекс на несколько полей*
 ```
+test_db=# DROP INDEX char_value_trim_index;
+DROP INDEX
+test_db=# DROP INDEX id_index;
+DROP INDEX
+test_db=# DROP INDEX int_value_index;
+DROP INDEX
+test_db=# EXPLAIN SELECT * FROM test_table WHERE id='30db14b8-4dd0-435c-b2aa-b7aa8e57136d' AND int_value=1;
+                                     QUERY PLAN
+-------------------------------------------------------------------------------------
+ Seq Scan on test_table  (cost=0.00..33.00 rows=1 width=24)
+   Filter: ((id = '30db14b8-4dd0-435c-b2aa-b7aa8e57136d'::uuid) AND (int_value = 1))
+(2 rows)
+test_db=# CREATE INDEX id_int_value_index ON test_table (id,int_value);
+CREATE INDEX
+test_db=# ANALYZE test_table;
+ANALYZE
+test_db=# EXPLAIN SELECT * FROM test_table WHERE id='30db14b8-4dd0-435c-b2aa-b7aa8e57136d' AND int_value=1;
+                                       QUERY PLAN
+-----------------------------------------------------------------------------------------
+ Index Scan using id_int_value_index on test_table  (cost=0.28..8.29 rows=1 width=24)
+   Index Cond: ((id = '30db14b8-4dd0-435c-b2aa-b7aa8e57136d'::uuid) AND (int_value = 1))
+(2 rows)
 
 ```
