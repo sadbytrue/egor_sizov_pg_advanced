@@ -135,5 +135,63 @@ postgres=# SELECT * FROM test2;
 # 4.Настройка каскадной репликации на ВМ 4
 *3.1. Реализовать горячее реплицирование для высокой доступности на 4ВМ. Источником должна выступать ВМ №3. Написать с какими проблемами столкнулись*
 ```
+ssh-rsa@vm4:~$ cd /etc/postgresql/15/main
+ssh-rsa@vm4:/etc/postgresql/15/main$ sudo nano postgresql.conf
+ssh-rsa@vm4:/etc/postgresql/15/main$ sudo nano pg_hba.conf
+ssh-rsa@vm4:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main restart
+ssh-rsa@vm4:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main stop
+
+ssh-rsa@vm4:~$ sudo rm -rf /var/lib/postgresql/15/main
+ssh-rsa@vm4:~$ pg_lsclusters
+Ver Cluster Port Status Owner     Data directory              Log file
+15  main    5432 down   <unknown> /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+ssh-rsa@vm4:~$ sudo -u postgres pg_basebackup -h 158.160.48.29 -p 5432 -R -D /var/lib/postgresql/15/main
+could not change directory to "/home/ssh-rsa": Permission denied
+pg_basebackup: error: connection to server at "158.160.48.29", port 5432 failed: FATAL:  no pg_hba.conf entry for replication connection from host "158.160.121.177", user "postgres", SSL encryption
+connection to server at "158.160.48.29", port 5432 failed: FATAL:  no pg_hba.conf entry for replication connection from host "158.160.121.177", user "postgres", no encryption
+```
+
+Надо внести изменения в pg_hba.conf на 3ВМ и задать пароль пользователю postgres
 
 ```
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo nano pg_hba.conf
+
+host    replication     postgres        all         scram-sha-256
+
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main restart
+
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo -u postgres psql
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# \password
+Enter new password for user "postgres":
+Enter it again:
+postgres=# \q
+```
+
+Возвращаемся на 4ВМ
+
+```
+ssh-rsa@vm4:~$ sudo -u postgres pg_basebackup -h 158.160.48.29 -p 5432 -R -D /var/lib/postgresql/15/main
+could not change directory to "/home/ssh-rsa": Permission denied
+Password:
+ssh-rsa@vm4:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 down   postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+ssh-rsa@vm4:~$ su postgres
+Password:
+postgres@vm4:/home/ssh-rsa$ echo 'hot_standby = on' >> /var/lib/postgresql/15/main/postgresql.auto.conf
+postgres@vm4:/home/ssh-rsa$ exit
+exit
+ssh-rsa@vm4:~$ sudo pg_ctlcluster 15 main start
+ssh-rsa@vm4:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+```
+
+Проверим, что репликация работает
+
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_40.png)
+
+Работает! Вставка в таблице на 1ВМ отразилась на 4ВМ.
