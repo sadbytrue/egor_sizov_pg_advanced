@@ -86,8 +86,52 @@ CREATE SUBSCRIPTION
 # 3.Настройка физической репликации на ВМ 3
 *3.1. 3 ВМ использовать как реплику для чтения и бэкапов (подписаться на таблицы из ВМ №1 и №2 )*
 ```
+ssh-rsa@vm3:~$ cd /etc/postgresql/15/main
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo nano postgresql.conf
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo nano pg_hba.conf
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo pg_ctlcluster 15 main restart
+ssh-rsa@vm3:/etc/postgresql/15/main$ sudo -u postgres psql
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# CREATE TABLE test (test_id integer);
+CREATE TABLE
+postgres=# CREATE TABLE test2 (test2_id integer);
+CREATE TABLE
+postgres=# CREATE SUBSCRIPTION test2_sub CONNECTION 'host=158.160.125.198 port=5432 user=postgres password=1 dbname=postgres' PUBLICATION test2_pub WITH (copy_data = true);
+ERROR:  could not create replication slot "test2_sub": ERROR:  replication slot "test2_sub" already exists
+postgres=# CREATE SUBSCRIPTION test_sub CONNECTION 'host=158.160.124.245 port=5432 user=postgres password=1 dbname=po
+postgres'# stgres' PUBLICATION test_pub WITH (copy_data = true);
+ERROR:  invalid connection string syntax: missing "=" after "stgres" in connection info string
+
+postgres=# CREATE SUBSCRIPTION test_sub CONNECTION 'host=158.160.124.245 port=5432 user=postgres password=1 dbname=po
+postgres'# stgres' PUBLICATION test_pub WITH (copy_data = true);
+ERROR:  invalid connection string syntax: missing "=" after "stgres" in connection info string
+
+postgres=# CREATE SUBSCRIPTION test_sub CONNECTION 'host=158.160.124.245 port=5432 user=postgres password=1 dbname=postgres' PUBLICATION test_pub WITH (copy_data = true);
+ERROR:  could not create replication slot "test_sub": ERROR:  replication slot "test_sub" already exists
+postgres=# CREATE SUBSCRIPTION test2_sub_vm3 CONNECTION 'host=158.160.125.198 port=5432 user=postgres password=1 dbname=postgres' PUBLICATION test2_pub WITH (copy_data = true);
+NOTICE:  created replication slot "test2_sub_vm3" on publisher
+CREATE SUBSCRIPTION
+postgres=# CREATE SUBSCRIPTION test_sub_vm3 CONNECTION 'host=158.160.124.245 port=5432 user=postgres password=1 dbname=postgres' PUBLICATION test_pub WITH (copy_data = true);
+NOTICE:  created replication slot "test_sub_vm3" on publisher
+CREATE SUBSCRIPTION
+postgres=# SELECT * FROM test;
+ test_id
+---------
+       1
+(1 row)
+
+postgres=# SELECT * FROM test2;
+ test2_id
+----------
+        1
+(1 row)
 
 ```
+
+Работает. Названия подписок не должны дублироваться, даже несмотря на то, что создаются для другого инстанса postgres.
+
 # 4.Настройка каскадной репликации на ВМ 4
 *3.1. Реализовать горячее реплицирование для высокой доступности на 4ВМ. Источником должна выступать ВМ №3. Написать с какими проблемами столкнулись*
 ```
