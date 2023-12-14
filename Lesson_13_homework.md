@@ -2,12 +2,38 @@
 *0.1. Создание виртуальной машины*
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_32.png)
 ```
-PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
-PS C:\Users\Egor> ssh ssh-rsa@158.160.111.168
-The authenticity of host '158.160.111.168 (158.160.111.168)' can't be established.
-ECDSA key fingerprint is SHA256:BGxIOpqD0ARENJ+sDyzOY7XHn5bF3S+Csr1LG5lqhbo.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '158.160.111.168' (ECDSA) to the list of known hosts.
-Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
-Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-89-generic x86_64)
+
 ```
+*0.2. Установка postgres*
+```
+
+```
+# 1.Написание запросов с различными типами соединений
+*1.1. Реализовать прямое соединение двух или более таблиц*
+```
+
+```
+*1.2. Реализовать левостороннее (или правостороннее) соединение двух или более таблиц*
+```
+
+```
+*1.3. Реализовать кросс соединение двух или более таблиц*
+```
+
+```
+*1.4. Реализовать полное соединение двух или более таблиц*
+```
+
+```
+*1.5. Реализовать запрос, в котором будут использованы разные типы соединений*
+```
+
+```
+# 2.Структура тестовой БД
+*2.1. К работе приложить структуру таблиц, для которых выполнялись соединения*
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_32.png)
+```
+
+```
+# 3.Задание со *
+*3.1. Придумайте 3 своих метрики на основе показанных представлений, отправьте их через ЛК, а так же поделитесь с коллегами*
