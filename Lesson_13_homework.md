@@ -28,6 +28,7 @@ Type "help" for help.
 *1.1. К работе приложить структуру таблиц, для которых выполнялись соединения*
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/123%20(1).png)
 
+
 ```
 postgres=# CREATE DATABASE contacts;
 CREATE DATABASE
