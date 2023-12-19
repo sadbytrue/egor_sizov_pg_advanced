@@ -124,22 +124,18 @@ demo=# EXPLAIN ANALYZE  SELECT * FROM bookings.ticket_flights WHERE fare_conditi
 (9 rows)
 
 --- Запрашиваем билеты класса Эконом и Комфорт
-demo=# EXPLAIN ANALYZE  SELECT * FROM bookings.ticket_flights WHERE fare_conditions='Comfort';
-                                                               QUERY PLAN
------------------------------------------------------------------------------------------------------------------------------------------
- Gather  (cost=1000.00..128962.66 rows=143221 width=32) (actual time=297.601..729.924 rows=139965 loops=1)
+demo=# EXPLAIN ANALYZE  SELECT * FROM bookings.ticket_flights WHERE fare_conditions IN ('Comfort','Economy');
+                                                                  QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=1000.00..95680.56 rows=39862 width=114) (actual time=123.635..2921.718 rows=7532196 loops=1)
    Workers Planned: 2
    Workers Launched: 2
-   ->  Parallel Seq Scan on ticket_flights  (cost=0.00..113640.56 rows=59675 width=32) (actual time=260.703..535.863 rows=46655 loops=3)
-         Filter: ((fare_conditions)::text = 'Comfort'::text)
-         Rows Removed by Filter: 2750629
- Planning Time: 0.062 ms
- JIT:
-   Functions: 6
-   Options: Inlining false, Optimization false, Expressions true, Deforming true
-   Timing: Generation 0.890 ms, Inlining 0.000 ms, Optimization 0.662 ms, Emission 18.179 ms, Total 19.731 ms
- Execution Time: 739.375 ms
-(12 rows)
+   ->  Parallel Seq Scan on ticket_flights  (cost=0.00..90694.36 rows=16609 width=114) (actual time=41.157..434.409 rows=2510732 loops=3)
+         Filter: ((fare_conditions)::text = ANY ('{Comfort,Economy}'::text[]))
+         Rows Removed by Filter: 286552
+ Planning Time: 0.173 ms
+ Execution Time: 3155.351 ms
+(8 rows)
 
 --- Запрашиваем класс, которого нет в таблице
 demo=# EXPLAIN ANALYZE  SELECT * FROM bookings.ticket_flights WHERE fare_conditions='Test';
@@ -242,3 +238,50 @@ ERROR:  there is no unique constraint matching given keys for referenced table "
 
 Делаем запросы к ссекционированной таблице, сравниваем с исходными
 
+```
+ Seq Scan on ticket_flights_economy ticket_flights  (cost=0.00..154004.89 rows=7392231 width=32) (actual time=2.210..754.158 rows=7392231 loops=1)
+   Filter: ((fare_conditions)::text = 'Economy'::text)
+ Planning Time: 0.640 ms
+ JIT:
+   Functions: 2
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+   Timing: Generation 0.256 ms, Inlining 0.000 ms, Optimization 0.178 ms, Emission 2.017 ms, Total 2.451 ms
+ Execution Time: 961.715 ms
+(8 rows)
+```
+
+Seq Scan прошел только в одной таблицы для класса Эконом. Выигрыш в итоговой скорости выполнения запроса есть, но незначительный.
+
+```
+demo=# EXPLAIN ANALYZE  SELECT * FROM bookings.ticket_flights WHERE fare_conditions IN ('Comfort','Economy');
+                                                                         QUERY PLAN
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Append  (cost=0.00..194582.43 rows=7532196 width=32) (actual time=2.970..1473.354 rows=7532196 loops=1)
+   ->  Seq Scan on ticket_flights_comfort ticket_flights_1  (cost=0.00..2916.56 rows=139965 width=33) (actual time=2.969..18.442 rows=139965 loops=1)
+         Filter: ((fare_conditions)::text = ANY ('{Comfort,Economy}'::text[]))
+   ->  Seq Scan on ticket_flights_economy ticket_flights_2  (cost=0.00..154004.89 rows=7392231 width=32) (actual time=0.081..1027.138 rows=7392231 loops=1)
+         Filter: ((fare_conditions)::text = ANY ('{Comfort,Economy}'::text[]))
+ Planning Time: 0.280 ms
+ JIT:
+   Functions: 4
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+   Timing: Generation 0.389 ms, Inlining 0.000 ms, Optimization 0.185 ms, Emission 2.803 ms, Total 3.376 ms
+ Execution Time: 1702.925 ms
+(11 rows)
+```
+
+Seq Scan прошел только в двух таблицах для класса Комфорт и Эконом. Выигрыш в итоговой скорости выполнения запроса уже двукратный.
+
+```
+demo=# EXPLAIN ANALYZE  SELECT * FROM bookings.ticket_flights WHERE fare_conditions='Test';
+                                     QUERY PLAN
+------------------------------------------------------------------------------------
+ Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.002..0.002 rows=0 loops=1)
+   One-Time Filter: false
+ Planning Time: 0.048 ms
+ Execution Time: 0.014 ms
+(4 rows)
+
+```
+
+Для значений, не входящих в диапазон выигрыш уже значительный. Сканирование вообще не выполняется.
