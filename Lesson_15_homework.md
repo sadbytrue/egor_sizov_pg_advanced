@@ -289,6 +289,43 @@ GROUP BY G.good_name;
 
 Ниже продемонстрирую, о какой проблеме говорю:
 
-```
+Обновим цену в таблице goods, не трогая данные в sales. По бизнес-логике сумма продаж останется неизменной, однако SELECT запрос не выполнит требование.
 
 ```
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         | sum_sale
+--------------------------+----------
+ Автомобиль Ferrari FXX K |     0.00
+ Спички хозайственные     |    66.50
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+FROM goods G
+INNER JOIN sales S ON S.good_id = G.goods_id
+GROUP BY G.good_name;
+      good_name       |  sum
+----------------------+-------
+ Спички хозайственные | 66.50
+(1 row)
+
+pract=# UPDATE goods SET good_price=1 WHERE goods_id=1;
+UPDATE 1
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         | sum_sale
+--------------------------+----------
+ Автомобиль Ferrari FXX K |     0.00
+ Спички хозайственные     |    66.50
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+FROM goods G
+INNER JOIN sales S ON S.good_id = G.goods_id
+GROUP BY G.good_name;
+      good_name       |  sum
+----------------------+--------
+ Спички хозайственные | 133.00
+(1 row)
+
+```
+
+
