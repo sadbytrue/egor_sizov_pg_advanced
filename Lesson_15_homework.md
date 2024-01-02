@@ -21,7 +21,55 @@ Ver Cluster Port Status Owner    Data directory              Log file
 ```
 *0.3. Развертывание базы, сздание и наполнение таблиц*
 ```
+ssh-rsa@lesson15:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.5 (Ubuntu 15.5-1.pgdg22.04+1))
+Type "help" for help.
 
+postgres=# CREATE DATABASE pract;
+CREATE DATABASE
+postgres=# \c pract;
+You are now connected to database "pract" as user "postgres".
+pract=# DROP SCHEMA IF EXISTS pract_functions CASCADE;
+NOTICE:  drop cascades to table pract_functions.goods
+DROP SCHEMA
+pract=# CREATE SCHEMA pract_functions;
+CREATE SCHEMA
+pract=# SET search_path = pract_functions, publ;
+SET
+pract=# CREATE TABLE goods
+pract-# (
+pract(#     goods_id    integer PRIMARY KEY,
+pract(#     good_name   varchar(63) NOT NULL,
+pract(#     good_price  numeric(12, 2) NOT NULL CHECK (good_price > 0.0)
+pract(# );
+CREATE TABLE
+pract=# INSERT INTO goods (goods_id, good_name, good_price) VALUES (1, 'Спички хозайственные', .50), (2, 'Автомобиль Ferrari FXX K', 185000000.01);
+INSERT 0 2
+pract=# CREATE TABLE goods
+(
+    goods_id    integpract-# (
+pract(#     goods_id    integer PRIMARY KEY,
+pract(#     good_name   varchar(63) NOT NULL,
+pract(#     good_price  numeric(12, 2) NOT NULL CHECK (good_price > 0.0)
+pract(# );
+ERROR:  relation "goods" already exists
+pract=# CREATE TABLE sales
+pract-# (
+pract(#     sales_id    integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+pract(#     good_id     integer REFERENCES goods (goods_id),
+pract(#     sales_time  timestamp with time zone DEFAULT now(),
+pract(#     sales_qty   integer CHECK (sales_qty > 0)
+pract(# );
+CREATE TABLE
+pract=# INSERT INTO sales (good_id, sales_qty) VALUES (1, 10), (1, 1), (1, 120), (2, 1);
+INSERT 0 4
+pract=# CREATE TABLE good_sum_mart
+(
+good_name   varchar(63) NOT NULL,
+sum_sale numeric(16, 2) NOT NULL
+);
+CREATE TABLE
 ```
 # 1.Создание триггера для поддержки данных в витрине в актуальном состоянии
 *1.1. В БД создана структура, описывающая товары (таблица goods) и продажи (таблица sales).
