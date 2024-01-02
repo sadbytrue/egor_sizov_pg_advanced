@@ -2,12 +2,24 @@
 *0.1. Создание виртуальной машины*
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_42.png)
 ```
-PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
-PS C:\Users\Egor> ssh ssh-rsa@178.154.206.162
-The authenticity of host '178.154.206.162 (178.154.206.162)' can't be established.
-ECDSA key fingerprint is SHA256:pPjejF1dr5roeW8LiMn/4AXgoqLfnkC/NkV1jBkN2J8.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '178.154.206.162' (ECDSA) to the list of known hosts.
-Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
-Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-91-generic x86_64)
+
 ```
+*0.2. Установка postgres*
+```
+
+```
+*0.3. Развертывание базы, сздание и наполнение таблиц*
+```
+
+```
+# 1.Создание триггера для поддержки данных в витрине в актуальном состоянии
+*1.1. В БД создана структура, описывающая товары (таблица goods) и продажи (таблица sales).
+Есть запрос для генерации отчета – сумма продаж по каждому товару.
+БД была денормализована, создана таблица (витрина), структура которой повторяет структуру отчета.
+Создать триггер на таблице продаж, для поддержки данных в витрине в актуальном состоянии (вычисляющий при каждой продаже сумму и записывающий её в витрину)
+Подсказка: не забыть, что кроме INSERT есть еще UPDATE и DELETE*
+```
+
+```
+# 2.Задание со звездочкой *
+*2.1. Чем такая схема (витрина+триггер) предпочтительнее отчета, создаваемого "по требованию" (кроме производительности)? Подсказка: В реальной жизни возможны изменения цен.*
