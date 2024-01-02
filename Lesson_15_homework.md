@@ -77,15 +77,218 @@ CREATE TABLE
 БД была денормализована, создана таблица (витрина), структура которой повторяет структуру отчета.
 Создать триггер на таблице продаж, для поддержки данных в витрине в актуальном состоянии (вычисляющий при каждой продаже сумму и записывающий её в витрину)
 Подсказка: не забыть, что кроме INSERT есть еще UPDATE и DELETE*
+
+Создадим следующую триггерную функцию:
+
+```
+pract=# CREATE OR REPLACE FUNCTION pract_functions.sales_rewrite_trigger_function()
+RETURNS trigger
+AS
+$$
+BEGIN
+--- Если триггер сработал для UPDATE или DELETE
+IF TG_OP='UPDATE' OR TG_OP='DELETE' THEN
+--- Отнимаем OLD.sales_qty*good_price по OLD.good_id
+UPDATE pract_functions.good_sum_mart
+SET sum_sale=sum_sale-
+OLD.sales_qty*(SELECT good_price FROM pract_functions.goods WHERE goods.goods_id=OLD.good_id)
+WHERE good_sum_mart.good_name=
+(SELECT good_name FROM pract_functions.goods WHERE goods.goods_id=OLD.good_id);
+END IF;
+--- Если триггер сработал для UPDATE или INSERT
+IF TG_OP='UPDATE' OR TG_OP='INSERT' THEN
+--- Прибавляем NEW.sales_qty*good_price по NEW.good_id
+INSERT INTO pract_functions.good_sum_mart (good_name, sum_sale)
+VALUES (
+(SELECT good_name FROM pract_functions.goods WHERE goods.goods_id=NEW.good_id),
+NEW.sales_qty*(SELECT good_price FROM pract_functions.goods WHERE goods.goods_id=NEW.good_id))
+ON CONFLICT (good_name) DO UPDATE
+SET sum_sale=good_sum_mart.sum_sale+EXCLUDED.sum_sale;
+END IF;
+RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+CREATE FUNCTION
 ```
 
+Внесем изменение в таблицу good_sum_mart - сделаем поле good_name PRIMARY KEY, чтобы работала конструкция INSERT ... DO UPDATE в нашей функции
+
+```
+pract=# DROP TABLE pract_functions.good_sum_mart;
+DROP TABLE
+pract=# CREATE TABLE pract_functions.good_sum_mart
+(
+good_name   varchar(63) PRIMARY KEY,
+sum_sale numeric(16, 2) NOT NULL
+);
+CREATE TABLE
+```
+
+Создадим триггеры:
+
+```
+pract=# CREATE TRIGGER sales_insert_trigger
+AFTER INSERT ON pract_functions.sales
+FOR EACH ROW
+EXECUTE PROCEDURE pract_functions.sales_rewrite_trigger_function();
+CREATE TRIGGER
+pract=# CREATE TRIGGER sales_update_trigger
+AFTER UPDATE OF good_id, sales_qty ON pract_functions.sales
+FOR EACH ROW
+EXECUTE PROCEDURE pract_functions.sales_rewrite_trigger_function();
+CREATE TRIGGER
+pract=# CREATE TRIGGER sales_delete_trigger
+AFTER DELETE ON pract_functions.sales
+FOR EACH ROW
+EXECUTE PROCEDURE pract_functions.sales_rewrite_trigger_function();
+CREATE TRIGGER
 ```
 *1.2. Тестирование работы триггеров при разных сценариях*
-```
+
+Сделаем DELETE * FROM sales, сделаем INSERT заново и сравним, что таблица good_sum_mart выдает результат такой же, как запрос SELECT из задания
 
 ```
+pract=# DELETE FROM pract_functions.sales;
+pract=# INSERT INTO sales (good_id, sales_qty) VALUES (1, 10), (1, 1), (1, 120), (2, 1);
+INSERT 0 4
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         |   sum_sale
+--------------------------+--------------
+ Спички хозайственные     |        65.50
+ Автомобиль Ferrari FXX K | 185000000.01
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+pract-# FROM goods G
+pract-# INNER JOIN sales S ON S.good_id = G.goods_id
+pract-# GROUP BY G.good_name;
+        good_name         |     sum
+--------------------------+--------------
+ Автомобиль Ferrari FXX K | 185000000.01
+ Спички хозайственные     |        65.50
+(2 rows)
+
+```
+
+Сделаем новый INSERT в sales
+
+```
+pract=# INSERT INTO sales (good_id, sales_qty) VALUES (1, 1);
+INSERT 0 1
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         |   sum_sale
+--------------------------+--------------
+ Автомобиль Ferrari FXX K | 185000000.01
+ Спички хозайственные     |        66.00
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+FROM goods G
+INNER JOIN sales S ON S.good_id = G.goods_id
+GROUP BY G.good_name;
+        good_name         |     sum
+--------------------------+--------------
+ Автомобиль Ferrari FXX K | 185000000.01
+ Спички хозайственные     |        66.00
+(2 rows)
+
+```
+
+Сделаем DELETE новой строчки
+
+```
+pract=# SELECT * FROM sales;
+ sales_id | good_id |          sales_time           | sales_qty
+----------+---------+-------------------------------+-----------
+       14 |       1 | 2024-01-02 18:51:59.486127+00 |        10
+       15 |       1 | 2024-01-02 18:51:59.486127+00 |         1
+       16 |       1 | 2024-01-02 18:51:59.486127+00 |       120
+       17 |       2 | 2024-01-02 18:51:59.486127+00 |         1
+       18 |       1 | 2024-01-02 18:55:42.479551+00 |         1
+(5 rows)
+
+pract=# DELETE FROM sales WHERE sales_id=18;
+DELETE 1
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         |   sum_sale
+--------------------------+--------------
+ Автомобиль Ferrari FXX K | 185000000.01
+ Спички хозайственные     |        65.50
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+FROM goods G
+INNER JOIN sales S ON S.good_id = G.goods_id
+GROUP BY G.good_name;
+        good_name         |     sum
+--------------------------+--------------
+ Автомобиль Ferrari FXX K | 185000000.01
+ Спички хозайственные     |        65.50
+(2 rows)
+
+```
+
+Сделаем UPDATE sales_qty в одной строке
+
+```
+pract=# UPDATE sales SET sales_qty=2 WHERE sales_id=17;
+UPDATE 1
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         |   sum_sale
+--------------------------+--------------
+ Спички хозайственные     |        65.50
+ Автомобиль Ferrari FXX K | 370000000.02
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+FROM goods G
+INNER JOIN sales S ON S.good_id = G.goods_id
+GROUP BY G.good_name;
+        good_name         |     sum
+--------------------------+--------------
+ Автомобиль Ferrari FXX K | 370000000.02
+ Спички хозайственные     |        65.50
+(2 rows)
+
+```
+
+Сделаем UPDATE good_id в той же строке
+
+```
+pract=# UPDATE sales SET good_id=1 WHERE sales_id=17;
+UPDATE 1
+pract=# SELECT * FROM pract_functions.good_sum_mart;
+        good_name         | sum_sale
+--------------------------+----------
+ Автомобиль Ferrari FXX K |     0.00
+ Спички хозайственные     |    66.50
+(2 rows)
+
+pract=# SELECT G.good_name, sum(G.good_price * S.sales_qty)
+FROM goods G
+INNER JOIN sales S ON S.good_id = G.goods_id
+GROUP BY G.good_name;
+      good_name       |  sum
+----------------------+-------
+ Спички хозайственные | 66.50
+(1 row)
+
+```
+
+В последнем случае в таблице для отчета остается строчка с sum_sale=0.00. Я опущу этот момент, но при необходимости функцию триггера можно доработать.
+
+В общем, работает.
+
 # 2.Задание со звездочкой *
 *2.1. Чем такая схема (витрина+триггер) предпочтительнее отчета, создаваемого "по требованию" (кроме производительности)? Подсказка: В реальной жизни возможны изменения цен.*
+
+Если good_price в таблице goods изменится, то SELECT запрос сделает JOIN новой цены и данные о сумме продаж станут некорректными, т.к. продавали товар в свое время по старой цене.
+При INSERT новых продаж в sales таблица good_sum_mart лишена этого недостатка.
+Однако при UPDATE или DELETE из sales при условии, что со времени продажи цена менялась, решение с триггерами также работает некорректно, т.к. взять информацию о цене товара, актуальную на момент продажи, в базе просто неоткуда.
+Чтобы решить эту проблему, необходимо изменить архитектуру базы. Например, добавить версионирование в таблицу goods (поля ts и tt, в которых будут размещаться время начала и окончания актуальности цены товара соответсвенно)
+
+Ниже продемонстрирую, о какой проблеме говорю:
+
 ```
 
 ```
