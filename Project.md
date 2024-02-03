@@ -100,6 +100,22 @@ PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-di
 ВМ 1 установка postgres, patroni и необходимых пакетов
 
 ```
+PS C:\Windows\system32> ssh ssh-rsa@postgres1
+
+PS C:\Windows\system32> sudo apt install net-tools
+
+PS C:\Windows\system32> sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
+
+PS C:\Windows\system32> sudo pg_ctlcluster 15 main stop
+
+PS C:\Windows\system32>
+
+PS C:\Windows\system32>
+
+PS C:\Windows\system32>
+
+PS C:\Windows\system32>
+
 PS C:\Windows\system32> 
 ```
 
