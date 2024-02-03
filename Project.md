@@ -94,3 +94,29 @@ PS C:\Users\Egor> yc compute instance create --name etcd --create-boot-disk imag
 ```
 PS C:\Users\Egor> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
 ```
+
+*2.1. Установка postgres, patroni, haproxy и необходимых пакетов*
+
+ВМ 1 установка postgres, patroni и необходимых пакетов
+
+```
+
+```
+
+ВМ 2 установка postgres, patroni и необходимых пакетов
+
+```
+
+```
+
+ВМ 3 установка etcd
+
+```
+
+```
+
+ВМ 4 установка haproxy
+
+```
+
+```
