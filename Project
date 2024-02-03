@@ -1,16 +1,26 @@
-# 0.Создание виртуальной машины и развертывание кластера PostgreSQL
-*0.1. Создание виртуальной машины*
+# 0.Материалы проекта
+*0.1. Презентация*
+
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Project_Presentation.pptx
+
+*0.2. Базовая архитектура*
+
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch.drawio
+
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_43.png)
-```
-PS C:\Users\Egor> type C:\Users\Egor\.ssh\id_ed25519.pub | clip
-PS C:\Users\Egor> ssh ssh-rsa@130.193.36.118
-The authenticity of host '130.193.36.118 (130.193.36.118)' can't be established.
-ECDSA key fingerprint is SHA256:FaWpebCjlD07v8wVKN8alG3rw+4c0JF0Baf4xsZqXDk.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '130.193.36.118' (ECDSA) to the list of known hosts.
-Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
-Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-91-generic x86_64)
-```
+
+*0.3. Архитектура с отдельным инстансом под backup и OLAP*
+
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch.drawio
+
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_43.png)
+
+*0.4. Архитектура с оптимизированным межсетеввым трафиком*
+
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio
+
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_43.png)
+
 *0.2. Установка postgres*
 ```
 ssh-rsa@lesson15:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
