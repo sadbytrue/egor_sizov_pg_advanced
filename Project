@@ -7,19 +7,19 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Project_Presentati
 
 https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch.drawio
 
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_43.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch.drawio.png)
 
 *0.3. Архитектура с отдельным инстансом под backup и OLAP*
 
 https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch.drawio
 
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_43.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch.drawio.png)
 
 *0.4. Архитектура с оптимизированным межсетеввым трафиком*
 
 https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio
 
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Screenshot_43.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio.png)
 
 *0.2. Установка postgres*
 ```
