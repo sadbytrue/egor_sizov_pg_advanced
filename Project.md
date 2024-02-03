@@ -21,10 +21,60 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.d
 
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio.png)
 
-*0.2. Установка postgres*
+# 1.Развертывание ВМ
+*1.1. Установка Yandex Cloud CLI*
 ```
-ssh-rsa@lesson15:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
+PS C:\Windows\system32> iex (New-Object System.Net.WebClient).DownloadString('https://storage.yandexcloud.net/yandexcloud-yc/install.ps1')
+Downloading yc 0.117.0
+Yandex Cloud CLI 0.117.0 windows/amd64
+Now we have zsh completion. Type "echo 'source C:\Users\Egor\yandex-cloud\completion.zsh.inc' >>  ~/.zshrc" to install itAdd yc installation dir to your PATH? [Y/n]: Y
+PS C:\Windows\system32> yc init
+Welcome! This command will take you through the configuration process.
+Please go to https://oauth.yandex.ru/authorize?response_type=token&client_id=*** in order to obtain OAuth token.
 
-ssh-rsa@lesson15:~$ pg_lsclusters
-Ver Cluster Port Status Owner    Data directory              Log file
-15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+Please enter OAuth token: ***
+You have one cloud available: 'cloud-sizyi-egor' (id = ***). It is going to be used by default.
+Please choose folder to use:
+ [1] default (id = ***)
+ [2] Create a new folder
+Please enter your numeric choice: 1
+Your current folder has been set to 'default' (id = ***).
+Do you want to configure a default Compute zone? [Y/n] Y
+Which zone do you want to use as a profile default?
+ [1] ru-central1-a
+ [2] ru-central1-b
+ [3] ru-central1-c
+ [4] ru-central1-d
+ [5] Don't set default zone
+Please enter your numeric choice: 1
+Your profile default Compute zone has been set to 'ru-central1-a'.
+PS C:\Windows\system32> yc config list
+token: ***
+cloud-id: ***
+folder-id: ***
+compute-default-zone: ru-central1-a
+PS C:\Windows\system32>
+```
+*1.2. Развертывание ВМ для архитектуры 1*
+
+ВМ 1 для postgres в географической зоне 1
+
+```
+PS C:\Users\Egor> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+```
+
+ВМ 2 для postgres в географической зоне 2
+
+```
+PS C:\Users\Egor> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+```
+
+ВМ 3 для etcd в географической зоне 1
+```
+PS C:\Users\Egor> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
+```
+
+ВМ 4 для proxy в географической зоне 1
+```
+PS C:\Users\Egor> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
+```
