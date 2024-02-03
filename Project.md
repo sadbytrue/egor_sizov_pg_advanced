@@ -21,7 +21,7 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.d
 
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio.png)
 
-# 1.Развертывание ВМ
+# 1.Подготовка к развертыванию
 *1.1. Установка Yandex Cloud CLI*
 ```
 PS C:\Windows\system32> iex (New-Object System.Net.WebClient).DownloadString('https://storage.yandexcloud.net/yandexcloud-yc/install.ps1')
@@ -55,10 +55,7 @@ folder-id: ***
 compute-default-zone: ru-central1-a
 PS C:\Windows\system32>
 ```
-*1.2. Развертывание ВМ для архитектуры 1*
-
-Файл с метаданными пользователя для подключения к ВМ
-
+*1.2. Файл с метаданными пользователя для подключения к ВМ*
 ```
 #cloud-config
 datasource:
@@ -73,6 +70,8 @@ users:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIALwPSUA8bw/xh8zkEaME/uauGwFs7FtpFba4ysmTChX egor@WIN-GRJINGE790V
 runcmd: []
 ```
+# 2.Базовая архитектура
+*2.1. Развертывание ВМ*
 
 ВМ 1 для postgres в географической зоне 1
 
