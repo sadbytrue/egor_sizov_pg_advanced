@@ -57,6 +57,23 @@ PS C:\Windows\system32>
 ```
 *1.2. Развертывание ВМ для архитектуры 1*
 
+Файл с метаданными пользователя для подключения к ВМ
+
+```
+#cloud-config
+datasource:
+ Ec2:
+  strict_id: false
+ssh_pwauth: no
+users:
+- name: ssh-rsa
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  shell: /bin/bash
+  ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIALwPSUA8bw/xh8zkEaME/uauGwFs7FtpFba4ysmTChX egor@WIN-GRJINGE790V
+runcmd: []
+```
+
 ВМ 1 для postgres в географической зоне 1
 
 ```
