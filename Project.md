@@ -76,23 +76,23 @@ runcmd: []
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для etcd в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
+PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
 ```
 
 ВМ 4 для proxy в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
+PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
 ```
 
 *2.1. Установка postgres, patroni, haproxy и необходимых пакетов*
@@ -100,35 +100,74 @@ PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-di
 ВМ 1 установка postgres, patroni и необходимых пакетов
 
 ```
-PS C:\Windows\system32> ssh ssh-rsa@postgres1
+PS C:\Users\Egor> ssh ssh-rsa@51.250.14.208
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 
-PS C:\Windows\system32> sudo apt install net-tools
+ssh-rsa@postgres1:~$ sudo apt install net-tools
 
 PS C:\Windows\system32> sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
 
-PS C:\Windows\system32> sudo pg_ctlcluster 15 main stop
+ssh-rsa@postgres1:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+ssh-rsa@postgres1:~$ sudo systemctl stop postgresql
+ssh-rsa@postgres1:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 down   postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
 
-PS C:\Windows\system32>
+ssh-rsa@postgres1:~$ sudo ln -s /usr/lib/postgresql/15/bin/* /usr/sbin/
 
-PS C:\Windows\system32>
+ssh-rsa@postgres1:~$ sudo apt install python-is-python3
+ssh-rsa@postgres1:~$ sudo apt install python3-testresources
+ssh-rsa@postgres1:~$ sudo apt install python3-pip
+ssh-rsa@postgres1:~$ pip3 install --upgrade setuptools
+ssh-rsa@postgres1:~$ sudo apt-get install --reinstall libpq-dev
+ssh-rsa@postgres1:~$ sudo pip3 install psycopg2
 
-PS C:\Windows\system32>
+ssh-rsa@postgres1:~$ sudo pip3 install patroni
 
-PS C:\Windows\system32>
-
-PS C:\Windows\system32> 
+ssh-rsa@postgres1:~$ sudo pip3 install python-etcd
 ```
 
 ВМ 2 установка postgres, patroni и необходимых пакетов
 
 ```
+PS C:\Users\Egor> ssh ssh-rsa@158.160.21.15
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-92-generic x86_64)
 
+ssh-rsa@postgres2:~$  sudo apt install net-tools
+
+ssh-rsa@postgres2:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
+
+ssh-rsa@postgres2:~$ sudo systemctl stop postgresql
+ssh-rsa@postgres2:~$ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+15  main    5432 down   postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+
+ssh-rsa@postgres2:~$ sudo ln -s /usr/lib/postgresql/15/bin/* /usr/sbin/
+
+ssh-rsa@postgres1:~$ sudo apt install python-is-python3
+ssh-rsa@postgres1:~$ sudo apt install python3-testresources
+ssh-rsa@postgres1:~$ sudo apt install python3-pip
+ssh-rsa@postgres1:~$ pip3 install --upgrade setuptools
+ssh-rsa@postgres1:~$ sudo apt-get install --reinstall libpq-dev
+ssh-rsa@postgres1:~$ sudo pip3 install psycopg2
+
+ssh-rsa@postgres1:~$ sudo pip3 install patroni
+
+ssh-rsa@postgres1:~$ sudo pip3 install python-etcd
 ```
 
 ВМ 3 установка etcd
 
 ```
+PS C:\Users\Egor> ssh ssh-rsa@51.250.80.23
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-92-generic x86_64)
 
+ssh-rsa@etcd:~$ sudo apt install net-tools
+ssh-rsa@etcd:~$ sudo apt -y install etcd
 ```
 
 ВМ 4 установка haproxy
