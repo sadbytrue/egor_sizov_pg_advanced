@@ -182,10 +182,79 @@ ssh-rsa@proxy:~$ sudo apt install net-tools
 
 ssh-rsa@proxy:~$ sudo apt -y install haproxy
 ```
-*2.2. Настройка haproxy*
+*2.2. Настройка etcd*
 
 ВМ 3
 
 ```
+PS C:\Users\Egor> ssh ssh-rsa@51.250.80.23
 
+ssh-rsa@etcd:~$ netstat -ltupn
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+tcp6       0      0 :::22                   :::*                    LISTEN      -
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           -
+udp        0      0 10.128.0.24:68          0.0.0.0:*                           -
+
+ssh-rsa@etcd:~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether d0:0d:72:71:05:6d brd ff:ff:ff:ff:ff:ff
+    altname enp138s0
+    altname ens8
+    inet 10.128.0.24/24 metric 100 brd 10.128.0.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::d20d:72ff:fe71:56d/64 scope link
+       valid_lft forever preferred_lft forever
+
+ssh-rsa@etcd:~$ sudo iptables -i lo -I INPUT -p tcp --dport 2379 -j ACCEPT
+ssh-rsa@etcd:~$ sudo iptables -i lo -I INPUT -p tcp --dport 2380 -j ACCEPT
+ssh-rsa@etcd:~$ sudo ufw enable
+ssh-rsa@etcd:~$ sudo ufw allow 2379/tcp
+ssh-rsa@etcd:~$ sudo ufw allow 2380/tcp
+
+ssh-rsa@etcd:~$ sudo nano /etc/default/etcd
+
+ETCD_LISTEN_PEER_URLS="http://10.128.0.255:2380"
+ETCD_LISTEN_CLIENT_URLS="http://10.128.0.255:2379"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://10.128.0.255:2380"
+ETCD_INITIAL_CLUSTER="default=http://10.128.0.255:2380"
+ETCD_INITIAL_CLUSTER_STATE="new"
+ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster"
+ETCD_ADVERTISE_CLIENT_URLS="http://10.128.0.255:2379"
+ETCD_ENABLE_V2="true"
+
+ssh-rsa@etcd:~$ sudo systemctl restart etcd
+ssh-rsa@etcd:~$ sudo systemctl status etcd
+● etcd.service - etcd - highly-available key value store
+     Loaded: loaded (/lib/systemd/system/etcd.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2024-02-04 22:05:15 UTC; 6s ago
+       Docs: https://etcd.io/docs
+             man:etcd
+   Main PID: 5913 (etcd)
+      Tasks: 7 (limit: 4558)
+     Memory: 4.3M
+        CPU: 68ms
+     CGroup: /system.slice/etcd.service
+             └─5913 /usr/bin/etcd
+
+Feb 04 22:05:15 etcd etcd[5913]: 8e9e05c52164694d became leader at term 5
+Feb 04 22:05:15 etcd etcd[5913]: raft.node: 8e9e05c52164694d elected leader 8e9e05c52164694d at term 5
+Feb 04 22:05:15 etcd etcd[5913]: published {Name:etcd ClientURLs:[http://10.128.0.255:2379]} to cluster cdf818194e3a>
+Feb 04 22:05:15 etcd etcd[5913]: ready to serve client requests
+Feb 04 22:05:15 etcd systemd[1]: Started etcd - highly-available key value store.
+Feb 04 22:05:15 etcd etcd[5913]: serving insecure client requests on 10.128.0.255:2379, this is strongly discouraged!
+Feb 04 22:05:15 etcd etcd[5913]: WARNING: 2024/02/04 22:05:15 grpc: addrConn.createTransport failed to connect to {1>
+Feb 04 22:05:16 etcd etcd[5913]: WARNING: 2024/02/04 22:05:16 grpc: addrConn.createTransport failed to connect to {1>
+Feb 04 22:05:18 etcd etcd[5913]: WARNING: 2024/02/04 22:05:18 grpc: addrConn.createTransport failed to connect to {1>
+Feb 04 22:05:20 etcd etcd[5913]: WARNING: 2024/02/04 22:05:20 grpc: addrConn.createTransport failed to connect to {
 ```
