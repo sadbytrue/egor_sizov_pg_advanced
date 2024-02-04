@@ -95,9 +95,9 @@ PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-dis
 PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
 ```
 
-*2.1. Установка postgres, patroni, haproxy и необходимых пакетов*
+*2.1. Установка postgres, patroni, etcd и haproxy*
 
-ВМ 1 установка postgres, patroni и необходимых пакетов
+ВМ 1 установка postgres, patroni, etcd и haproxy
 
 ```
 PS C:\Users\Egor> ssh ssh-rsa@51.250.14.208
@@ -129,7 +129,7 @@ ssh-rsa@postgres1:~$ sudo pip3 install patroni
 ssh-rsa@postgres1:~$ sudo pip3 install python-etcd
 ```
 
-ВМ 2 установка postgres, patroni и необходимых пакетов
+ВМ 2 установка postgres, patroni, etcd и haproxy
 
 ```
 PS C:\Users\Egor> ssh ssh-rsa@158.160.21.15
@@ -171,6 +171,20 @@ ssh-rsa@etcd:~$ sudo apt -y install etcd
 ```
 
 ВМ 4 установка haproxy
+
+```
+PS C:\Users\Egor> ssh ssh-rsa@178.154.207.138
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-92-generic x86_64)
+
+ssh-rsa@proxy:~$ sudo apt update
+ssh-rsa@proxy:~$ sudo apt install net-tools
+
+ssh-rsa@proxy:~$ sudo apt -y install haproxy
+```
+*2.2. Настройка haproxy*
+
+ВМ 3
 
 ```
 
