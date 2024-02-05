@@ -258,3 +258,193 @@ Feb 04 22:05:16 etcd etcd[5913]: WARNING: 2024/02/04 22:05:16 grpc: addrConn.cre
 Feb 04 22:05:18 etcd etcd[5913]: WARNING: 2024/02/04 22:05:18 grpc: addrConn.createTransport failed to connect to {1>
 Feb 04 22:05:20 etcd etcd[5913]: WARNING: 2024/02/04 22:05:20 grpc: addrConn.createTransport failed to connect to {
 ```
+*2.3. Настройка patroni*
+
+ВМ 1
+
+```
+PS C:\Users\Egor> ssh ssh-rsa@51.250.90.21
+ssh-rsa@postgres1:~$ sudo nano /etc/patroni.yml
+
+scope: postgres
+namespace: /db/
+name: postgres1
+
+restapi:
+    listen: 51.250.90.21:8008
+    connect_address: 51.250.90.21:8008
+
+etcd:
+    host: 51.250.89.114:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+
+  initdb:
+  - encoding: UTF8
+  - data-checksums
+
+  pg_hba:
+  - host replication replicator 127.0.0.1/32 md5
+  - host replication replicator 51.250.90.21/0 md5
+  - host replication replicator 158.160.16.28/0 md5
+  - host all all 0.0.0.0/0 md5
+
+  users:
+    admin:
+      password: admin
+      options:
+        - createrole
+        - createdb
+postgresql:
+  listen: 51.250.90.21:5432
+  connect_address: 51.250.90.21:5432
+  data_dir: /data/patroni
+  pgpass: /tmp/pgpass
+  authentication:
+    replication:
+      username: replicator
+      password: replicator
+    superuser:
+      username: postgres
+      password: postgres
+  parameters:
+      unix_socket_directories: '.'
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false
+
+ssh-rsa@postgres1:~$ sudo mkdir -p /data/patroni
+ssh-rsa@postgres1:~$ sudo chown postgres:postgres /data/patroni
+ssh-rsa@postgres1:~$ sudo chmod 700 /data/patroni
+ssh-rsa@postgres1:~$ sudo nano /etc/systemd/system/patroni.service
+
+[Unit]
+Description=High availability PostgreSQL Cluster
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=postgres
+Group=postgres
+ExecStart=/usr/local/bin/patroni /etc/patroni.yml
+KillMode=process
+TimeoutSec=30
+Restart=no
+
+[Install]
+WantedBy=multi-user.targ
+```
+
+ВМ 2
+
+```
+PS C:\Users\Egor> ssh ssh-rsa@158.160.16.28
+ssh-rsa@postgres1:~$ sudo nano /etc/patroni.yml
+
+scope: postgres
+namespace: /db/
+name: postgres2
+
+restapi:
+    listen: 158.160.16.28:8008
+    connect_address: 158.160.16.28:8008
+
+etcd:
+    host: 51.250.89.114:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+
+  initdb:
+  - encoding: UTF8
+  - data-checksums
+
+  pg_hba:
+  - host replication replicator 127.0.0.1/32 md5
+  - host replication replicator 51.250.90.21/0 md5
+  - host replication replicator 158.160.16.28/0 md5
+  - host all all 0.0.0.0/0 md5
+
+  users:
+    admin:
+      password: admin
+      options:
+        - createrole
+        - createdb
+postgresql:
+  listen: 158.160.16.28:5432
+  connect_address: 158.160.16.28:5432
+  data_dir: /data/patroni
+  pgpass: /tmp/pgpass
+  authentication:
+    replication:
+      username: replicator
+      password: replicator
+    superuser:
+      username: postgres
+      password: postgres
+  parameters:
+      unix_socket_directories: '.'
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false
+
+ssh-rsa@postgres1:~$ sudo mkdir -p /data/patroni
+ssh-rsa@postgres1:~$ sudo chown postgres:postgres /data/patroni
+ssh-rsa@postgres1:~$ sudo chmod 700 /data/patroni
+ssh-rsa@postgres1:~$ sudo nano /etc/systemd/system/patroni.service
+
+[Unit]
+Description=High availability PostgreSQL Cluster
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=postgres
+Group=postgres
+ExecStart=/usr/local/bin/patroni /etc/patroni.yml
+KillMode=process
+TimeoutSec=30
+Restart=no
+
+[Install]
+WantedBy=multi-user.targ
+```
+*2.4. Включение patroni*
+
+ВМ 1
+
+```
+ssh-rsa@postgres1:~$ sudo systemctl start patroni
+ssh-rsa@postgres1:~$ sudo systemctl status patroni
+```
+
+ВМ 2
+
+```
+ssh-rsa@postgres2:~$ sudo systemctl start patroni
+ssh-rsa@postgres2:~$ sudo systemctl status patroni
+```
