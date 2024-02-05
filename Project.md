@@ -448,3 +448,41 @@ ssh-rsa@postgres1:~$ sudo systemctl status patroni
 ssh-rsa@postgres2:~$ sudo systemctl start patroni
 ssh-rsa@postgres2:~$ sudo systemctl status patroni
 ```
+*2.5. Настройка HAProxy*
+
+ВМ HAProxy
+
+```
+PS C:\Users\Egor> ssh ssh-rsa@158.160.51.105
+
+ssh-rsa@proxy:~$ sudo nano /etc/haproxy/haproxy.cfg
+
+global
+        maxconn 100
+        log     127.0.0.1 local2
+
+defaults
+        log global
+        mode tcp
+        retries 2
+        timeout client 30m
+        timeout connect 4s
+        timeout server 30m
+        timeout check 5s
+listen stats
+    mode http
+    bind *:7000
+    stats enable
+    stats uri /
+
+listen postgres
+    bind *:5000
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server node1 51.250.90.21:5432 maxconn 100 check port 8008
+    server node2 158.160.16.28:5432 maxconn 100 check port 8008
+
+ssh-rsa@proxy:~$ ssh-rsa@proxy:~$ sudo systemctl restart haproxy
+ssh-rsa@proxy:~$ sudo systemctl status haproxy
+```
