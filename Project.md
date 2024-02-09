@@ -224,7 +224,7 @@ ssh-rsa@etcd:~$ sudo ufw allow 2380/tcp
 
 ssh-rsa@etcd:~$ sudo nano /etc/default/etcd
 
-!!! ВНутренний IP виртуалки, а не публичный !!!
+#Внутренний IP
 ETCD_LISTEN_PEER_URLS="http://10.128.0.255:2380"
 ETCD_LISTEN_CLIENT_URLS="http://10.128.0.255:2379"
 ETCD_INITIAL_ADVERTISE_PEER_URLS="http://10.128.0.255:2380"
@@ -267,6 +267,7 @@ Feb 04 22:05:20 etcd etcd[5913]: WARNING: 2024/02/04 22:05:20 grpc: addrConn.cre
 PS C:\Users\Egor> ssh ssh-rsa@51.250.90.21
 ssh-rsa@postgres1:~$ sudo nano /etc/patroni.yml
 
+!!! Внутренний IP хоста, а не внешний !!!
 scope: postgres
 namespace: /db/
 name: postgres1
@@ -359,7 +360,9 @@ namespace: /db/
 name: postgres2
 
 restapi:
+#Внутренний IP хоста
     listen: 158.160.16.28:8008
+#Внешний IP хоста
     connect_address: 158.160.16.28:8008
 
 etcd:
@@ -393,7 +396,9 @@ bootstrap:
         - createrole
         - createdb
 postgresql:
+#Внутренний IP хоста
   listen: 158.160.16.28:5432
+#Внутренний IP хоста
   connect_address: 158.160.16.28:5432
   data_dir: /data/patroni
   pgpass: /tmp/pgpass
@@ -481,7 +486,9 @@ listen postgres
     option httpchk
     http-check expect status 200
     default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+#Внешний IP хоста
     server node1 51.250.90.21:5432 maxconn 100 check port 8008
+#Внешний IP хоста
     server node2 158.160.16.28:5432 maxconn 100 check port 8008
 
 ssh-rsa@proxy:~$ ssh-rsa@proxy:~$ sudo systemctl restart haproxy
