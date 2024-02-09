@@ -224,6 +224,7 @@ ssh-rsa@etcd:~$ sudo ufw allow 2380/tcp
 
 ssh-rsa@etcd:~$ sudo nano /etc/default/etcd
 
+!!! ВНутренний IP виртуалки, а не публичный !!!
 ETCD_LISTEN_PEER_URLS="http://10.128.0.255:2380"
 ETCD_LISTEN_CLIENT_URLS="http://10.128.0.255:2379"
 ETCD_INITIAL_ADVERTISE_PEER_URLS="http://10.128.0.255:2380"
