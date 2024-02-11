@@ -1764,36 +1764,6 @@ FROM generate_series(1,1000000);
 ```
 *5.4. Скрипты для OLTP нагрузки БД*
 ```
-INSERT INTO phones (value)
-VALUES (random_between(100000000,999999999));
-
-INSERT INTO goods (name)
-VALUES (random_string(10));
-
-INSERT INTO uoms (name)
-VALUES (random_string(5));
-
-INSERT INTO customers (name, surname, phone_id)
-VALUES (
-random_string(10),
-random_string(10),
-random_between(1,200000));
-
-INSERT INTO suppliers (name, surname, phone_id)
-VALUES (
-random_string(10),
-random_string(10),
-random_between(1,200000));
-
-INSERT INTO contracts (supplier_id, customer_id, good_id, quantity, uom_id)
-VALUES (
-random_between(1,100000),
-random_between(1,100000),
-random_between(1,10000),
-random_between(1,1000000)::numeric/1000:numeric,
-random_between(1,1000));
-
-
 SELECT * FROM phones WHERE id = random_between(1,200000);
 SELECT * FROM goods WHERE id = random_between(1,10000);
 SELECT * FROM uoms WHERE id = random_between(1,1000);
@@ -1835,13 +1805,59 @@ WHERE id = random_between(1,1000000);
 ```
 *5.5. Скрипты для OLAP нагрузки БД*
 ```
+SELECT
+contracts.id,
+customers.name AS customer_name,
+customers.surname AS customer_surname,
+customers_phones.value AS customer_phone,
+suppliers.name AS supplier_name,
+suppliers.surname AS supplier_surname,
+suppliers_phones.value AS supplier_phone,
+goods.name AS good_name,
+contracts.quantity,
+uoms.name AS uom_name
+FROM contracts
+LEFT JOIN customers ON contracts.customer_id=customers.id
+LEFT JOIN suppliers ON contracts.customer_id=suppliers.id
+LEFT JOIN phones customers_phones ON customers.phone_id=phones.id
+LEFT JOIN phones suppliers_phones ON suppliers.phone_id=phones.id
+LEFT JOIN goods ON contracts.good_id=goods.id
+LEFT JOIN uoms ON contracts.uom_id=uoms.id;
 
+SELECT 
+supplier_id,
+AVG(quantity) AS avg_quantity,
+COUNT(supplier_id) AS number_of_contracts,
+SUM(quantity) AS sum_quantity
+FROM contracts GROUP BY supplier_id;
+
+SELECT 
+customer_id,
+AVG(quantity) AS avg_quantity,
+COUNT(supplier_id) AS number_of_contracts,
+SUM(quantity) AS sum_quantity
+FROM contracts GROUP BY customer_id;
+
+SELECT 
+good_id,
+AVG(quantity) AS avg_quantity,
+COUNT(supplier_id) AS number_of_contracts,
+SUM(quantity) AS sum_quantity
+FROM contracts GROUP BY good_id;
+
+SELECT 
+uom_id,
+AVG(quantity) AS avg_quantity,
+COUNT(supplier_id) AS number_of_contracts,
+SUM(quantity) AS sum_quantity
+FROM contracts GROUP BY uom_id;
 ```
 *5.6. Скрипт для backup БД*
 ```
-
+pg_dump -h <host> -p <port> -U postgres -W postgres -d contracts_test -f db.sql
 ```
 *5.7. Скрипт для моделирования отказа интстанса*
 ```
-
+sudo systemctl stop postgresql
+sudo systemctl start postgresql
 ```
