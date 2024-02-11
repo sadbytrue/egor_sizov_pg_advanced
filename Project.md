@@ -11,9 +11,9 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch.drawio
 
 *0.3. Архитектура с отдельным инстансом под backup и OLAP*
 
-https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch.drawio
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch_NEW.drawio
 
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch.drawio.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP_Arch_NEW.drawio.png)
 
 *0.4. Архитектура с оптимизированным межсетеввым трафиком*
 
