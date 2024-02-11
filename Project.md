@@ -1704,14 +1704,134 @@ good_id integer REFERENCES goods (id),
 quantity integer,
 uom_id integer REFERENCES uoms (id)
 );
+
+CREATE OR REPLACE FUNCTION random_between(low INT ,high INT) 
+   RETURNS INT AS
+$$
+BEGIN
+   RETURN floor(random()* (high-low + 1) + low);
+END;
+$$ language 'plpgsql' STRICT;
+CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as $$
+    SELECT string_agg(substring('0123456789bcdfghjkmnpqrstvwxyz', round(random() * 30)::integer, 1), '') FROM generate_series(1, $1);
+$$ language sql;
 ```
 *5.3. Скрипт для наполнения данными БД*
 ```
+INSERT INTO phones (id, value)
+SELECT 
+generate_series,
+random_between(100000000,999999999)
+FROM generate_series(1,200000);
 
+INSERT INTO goods (id, name)
+SELECT 
+generate_series,
+random_string(10)
+FROM generate_series(1,10000);
+
+INSERT INTO uoms (id, name)
+SELECT 
+generate_series,
+random_string(5)
+FROM generate_series(1,1000);
+
+INSERT INTO customers (id, name, surname, phone_id)
+SELECT 
+generate_series,
+random_string(10),
+random_string(10),
+random_between(1,100000)
+FROM generate_series(1,100000);
+
+INSERT INTO suppliers (id, name, surname, phone_id)
+SELECT 
+generate_series,
+random_string(10),
+random_string(10),
+random_between(1,100000)
+FROM generate_series(1,100000);
+
+INSERT INTO contracts (id, supplier_id, customer_id, good_id, quantity, uom_id)
+SELECT 
+generate_series,
+random_between(1,100000),
+random_between(1,100000),
+random_between(1,10000),
+random_between(1,1000000)::numeric/1000:numeric,
+random_between(1,1000)
+FROM generate_series(1,1000000);
 ```
 *5.4. Скрипты для OLTP нагрузки БД*
 ```
+INSERT INTO phones (value)
+VALUES (random_between(100000000,999999999));
 
+INSERT INTO goods (name)
+VALUES (random_string(10));
+
+INSERT INTO uoms (name)
+VALUES (random_string(5));
+
+INSERT INTO customers (name, surname, phone_id)
+VALUES (
+random_string(10),
+random_string(10),
+random_between(1,200000));
+
+INSERT INTO suppliers (name, surname, phone_id)
+VALUES (
+random_string(10),
+random_string(10),
+random_between(1,200000));
+
+INSERT INTO contracts (supplier_id, customer_id, good_id, quantity, uom_id)
+VALUES (
+random_between(1,100000),
+random_between(1,100000),
+random_between(1,10000),
+random_between(1,1000000)::numeric/1000:numeric,
+random_between(1,1000));
+
+
+SELECT * FROM phones WHERE id = random_between(1,200000);
+SELECT * FROM goods WHERE id = random_between(1,10000);
+SELECT * FROM uoms WHERE id = random_between(1,1000);
+
+SELECT * FROM customers WHERE id = random_between(1,100000);
+SELECT * FROM suppliers WHERE id = random_between(1,100000);
+SELECT * FROM customers WHERE phone_id = random_between(1,200000);
+SELECT * FROM suppliers WHERE phone_id = random_between(1,200000);
+
+SELECT * FROM contracts WHERE id = random_between(1,1000000);
+SELECT * FROM contracts WHERE supplier_id = random_between(1,100000);
+SELECT * FROM contracts WHERE customer_id = random_between(1,100000);
+SELECT * FROM contracts WHERE good_id = random_between(1,10000);
+SELECT * FROM contracts WHERE good_id = random_between(1,1000);
+
+
+UPDATE phones SET value = random_between(100000000,999999999) WHERE id = random_between(1,200000);
+UPDATE goods SET name = random_string(10) WHERE id = random_between(1,10000);
+UPDATE uoms SET name = random_string(5) WHERE id = random_between(1,1000);
+
+UPDATE customers SET 
+name = random_string(10),
+surname = random_string(10),
+phone_id = random_between(1,200000)
+WHERE id = random_between(1,100000);
+UPDATE suppliers SET 
+name = random_string(10),
+surname = random_string(10),
+phone_id = random_between(1,200000)
+WHERE id = random_between(1,100000);
+
+UPDATE contracts SET
+supplier_id=random_between(1,100000),
+customer_id=random_between(1,100000),
+good_id=random_between(1,10000),
+quantity=random_between(1,1000000)::numeric/1000:numeric,
+uom_id=random_between(1,1000)
+WHERE id = random_between(1,1000000);
 ```
 *5.5. Скрипты для OLAP нагрузки БД*
 ```
