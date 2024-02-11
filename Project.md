@@ -71,6 +71,13 @@ users:
 runcmd: []
 ```
 # 2.Базовая архитектура
+| Host | Internal IP | Public IP |
+| ------ | ------ | ------ |
+| postgres1 |  |  |
+| postgres2 |  |  |
+| etcd |  |  |
+| proxy |  |  |
+
 *2.1. Развертывание ВМ*
 
 ВМ 1 для postgres в географической зоне 1
