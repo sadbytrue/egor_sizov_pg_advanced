@@ -1658,3 +1658,33 @@ listen postgres
 ssh-rsa@proxy:~$ ssh-rsa@proxy:~$ sudo systemctl restart haproxy
 ssh-rsa@proxy:~$ sudo systemctl status haproxy
 ```
+# 5. Тестирование производительности
+*5.1. Структура тестовой БД*
+
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/db_scheme.drawio
+
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/db_scheme.drawio.png)
+*5.2. Queries инита тестовой БД*
+```
+
+```
+*5.3. Queries для наполнения данными БД*
+```
+
+```
+*5.4. Queries для OLTP нагрузки БД*
+```
+
+```
+*5.5. Queries для OLAP нагрузки БД*
+```
+
+```
+*5.6. Queries для backup БД*
+```
+
+```
+*5.7. Queries для моделирования отказа интстанса*
+```
+
+```
