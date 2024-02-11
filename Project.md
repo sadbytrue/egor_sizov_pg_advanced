@@ -1664,27 +1664,64 @@ ssh-rsa@proxy:~$ sudo systemctl status haproxy
 https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/db_scheme.drawio
 
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/db_scheme.drawio.png)
-*5.2. Queries инита тестовой БД*
+*5.2. Скрипт инита тестовой БД*
+```
+DROP IF EXISTS DATABASE contracts_test;
+
+CREATE IF NOT EXISTS DATABASE contracts_test;
+
+CREATE TABLE phones (
+id serial PRIMARY KEY, 
+value integer);
+
+CREATE TABLE goods (
+id serial PRIMARY KEY, 
+name text);
+
+CREATE TABLE uoms 
+(id serial PRIMARY KEY, 
+name text);
+
+CREATE TABLE customers (
+id serial PRIMARY KEY, 
+name text,
+surname text,
+phone_id integer REFERENCES phones (id)
+);
+
+CREATE TABLE suppliers (
+id serial PRIMARY KEY, 
+name text,
+surname text,
+phone_id integer REFERENCES phones (id)
+);
+
+CREATE TABLE contracts (
+id serial PRIMARY KEY, 
+supplier_id integer REFERENCES suppliers (id),
+customer_id integer REFERENCES customers (id),
+good_id integer REFERENCES goods (id),
+quantity integer,
+uom_id integer REFERENCES uoms (id)
+);
+```
+*5.3. Скрипт для наполнения данными БД*
 ```
 
 ```
-*5.3. Queries для наполнения данными БД*
+*5.4. Скрипты для OLTP нагрузки БД*
 ```
 
 ```
-*5.4. Queries для OLTP нагрузки БД*
+*5.5. Скрипты для OLAP нагрузки БД*
 ```
 
 ```
-*5.5. Queries для OLAP нагрузки БД*
+*5.6. Скрипт для backup БД*
 ```
 
 ```
-*5.6. Queries для backup БД*
-```
-
-```
-*5.7. Queries для моделирования отказа интстанса*
+*5.7. Скрипт для моделирования отказа интстанса*
 ```
 
 ```
