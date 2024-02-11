@@ -5,9 +5,9 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Project_Presentati
 
 *0.2. Базовая архитектура*
 
-https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch.drawio
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch_NEW.drawio
 
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch.drawio.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Base_Arch_NEW.drawio.png)
 
 *0.3. Архитектура с отдельным инстансом под backup и OLAP*
 
@@ -17,9 +17,9 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Separate_OLTP_OLAP
 
 *0.4. Архитектура с оптимизированным межсетеввым трафиком*
 
-https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio
+https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch_NEW.drawio
 
-![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch.drawio.png)
+![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Opt_Traffic_Arch_NEW.drawio.png)
 
 # 1.Подготовка к развертыванию
 *1.1. Установка Yandex Cloud CLI*
