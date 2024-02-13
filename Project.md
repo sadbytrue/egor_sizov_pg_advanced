@@ -1864,3 +1864,25 @@ pg_dump -h <host> -p <port> -U postgres -W -d contracts_test -f db.sql
 sudo systemctl stop postgresql
 sudo systemctl start postgresql
 ```
+*5.8. Инструмент для тестирования*
+
+Инструментом для тестирования выбран https://github.com/winebarrel/pgslap
+Он поддерживает создание пользовательских БД и выполнение пользовательских запросов
+
+Команда для генерации OLTP нагрузки:
+
+```
+
+```
+
+Команда для генерации OLAP нагрузки:
+
+```
+
+```
+
+Команда для генерации backup нагрузки:
+
+```
+
+```
