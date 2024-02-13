@@ -1880,8 +1880,8 @@ PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 oltp_load_scripts.sql                                                              100% 1629    78.0KB/s   00:00
 
-PS C:\Users\Egor> ssh-rsa@158.160.123.33
-ssh-rsa@postgres1: git clone https://github.com/winebarrel/pgslap.git
+PS C:\Users\Egor> scp C:\Users\Egor\Downloads\pgslap_v1.0.0_linux_amd64\pgslap ssh-rsa@51.250.73.219:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 
 ssh-rsa@postgres1:~$ sudo -u postgres psql
 could not change directory to "/home/ssh-rsa": Permission denied
