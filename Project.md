@@ -1883,6 +1883,7 @@ oltp_load_scripts.sql                                                           
 PS C:\Users\Egor> scp C:\Users\Egor\Downloads\pgslap_v1.0.0_linux_amd64\pgslap ssh-rsa@51.250.73.219:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 
+ssh-rsa@postgres1:~$ sudo chmod +x pgslap
 ssh-rsa@postgres1:~$ sudo -u postgres psql
 could not change directory to "/home/ssh-rsa": Permission denied
 psql (15.6 (Ubuntu 15.6-1.pgdg22.04+1))
