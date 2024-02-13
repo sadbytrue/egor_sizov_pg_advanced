@@ -1869,6 +1869,29 @@ sudo systemctl start postgresql
 Инструментом для тестирования выбран https://github.com/winebarrel/pgslap
 Он поддерживает создание пользовательских БД и выполнение пользовательских запросов
 
+```
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\create_db_scripts.sql ssh-rsa@158.160.123.33:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+create_db_scripts.sql                                                              100% 2168   110.2KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\olap_load_scripts.sql ssh-rsa@158.160.123.33:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+olap_load_scripts.sql                                                              100% 1367    69.6KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql ssh-rsa@158.160.123.33:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+oltp_load_scripts.sql                                                              100% 1629    78.0KB/s   00:00
+
+PS C:\Users\Egor> ssh-rsa@158.160.123.33
+ssh-rsa@postgres1: git clone https://github.com/winebarrel/pgslap.git
+
+ssh-rsa@postgres1:~$ sudo -u postgres psql
+could not change directory to "/home/ssh-rsa": Permission denied
+psql (15.6 (Ubuntu 15.6-1.pgdg22.04+1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE contracts_test;
+CREATE DATABASE
+```
+
 Команда для генерации OLTP нагрузки:
 
 ```
