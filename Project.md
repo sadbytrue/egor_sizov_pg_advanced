@@ -1859,7 +1859,8 @@ FROM contracts GROUP BY uom_id;
 ```
 *5.6. Скрипт для backup БД*
 ```
-pg_dump -h <host> -p <port> -U postgres -W -d contracts_test -f db.sql
+sudo -u postgres pg_basebackup --pgdata=/home/ssh-rsa/bc1 --host=<host> --port=<port> --username=postgres --password
+Password:
 ```
 *5.7. Скрипт для моделирования отказа интстанса*
 ```
@@ -1924,7 +1925,7 @@ contracts_test=# \q
 ./pgslap -u 'postgres://postgres:postgres@<host>:5432/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t <time in seconds>
 ```
 
-Команда для генерации backup нагрузки:
+Команда для генерации backup нагрузки - bash скрипт
 
 ```
 
