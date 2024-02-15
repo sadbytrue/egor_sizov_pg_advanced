@@ -1882,6 +1882,7 @@ olap_load_scripts.sql                                                           
 PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 oltp_load_scripts.sql                                                              100% 1629    78.0KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_base_backup.sh ssh-rsa@<host_n>:/home/ssh-rsa
 
 PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pgslap_v1.0.0_linux_amd64\pgslap ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
