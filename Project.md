@@ -83,13 +83,13 @@ runcmd: []
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для etcd в географической зоне 1
@@ -472,19 +472,19 @@ ssh-rsa@proxy:~$ sudo systemctl status haproxy
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для реплики postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
+PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
 ```
 
 ВМ 4 для etcd в географической зоне 1
@@ -1001,25 +1001,25 @@ ssh-rsa@proxy:~$ sudo systemctl status haproxy
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для реплики postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
+PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
 ```
 
 ВМ 4 для реплики postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres4 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres4
+PS C:\Windows\system32> yc compute instance create --name postgres4 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=10,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 16G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres4
 ```
 
 ВМ 5 для etcd в географической зоне 1
@@ -1665,13 +1665,27 @@ https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/db_scheme.drawio
 
 ![Иллюстрация к проекту](https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/db_scheme.drawio.png)
 *5.2. Скрипт инита тестовой БД*
+
+Подготовка базы:
+
 ```
-DROP DATABASE IF EXISTS contracts_test;
-
 CREATE DATABASE contracts_test;
+\c contracts_test
 
-\c contracts_test;
+CREATE OR REPLACE FUNCTION random_between(low INT ,high INT) 
+   RETURNS INT AS
+$$
+BEGIN
+   RETURN floor(random()* (high-low + 1) + low);
+END;
+$$ language 'plpgsql' STRICT;
 
+CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as $$
+    SELECT string_agg(substring('0123456789bcdfghjkmnpqrstvwxyz', round(random() * 30)::integer, 1), '') FROM generate_series(1, $1);
+$$ language sql;
+```
+
+```
 CREATE TABLE phones (
 id serial PRIMARY KEY, 
 value integer);
@@ -1706,18 +1720,6 @@ good_id integer REFERENCES goods (id),
 quantity integer,
 uom_id integer REFERENCES uoms (id)
 );
-
-CREATE OR REPLACE FUNCTION random_between(low INT ,high INT) 
-   RETURNS INT AS
-$$
-BEGIN
-   RETURN floor(random()* (high-low + 1) + low);
-END;
-$$ language 'plpgsql' STRICT;
-
-CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as $$
-    SELECT string_agg(substring('0123456789bcdfghjkmnpqrstvwxyz', round(random() * 30)::integer, 1), '') FROM generate_series(1, $1);
-$$ language sql;
 ```
 *5.3. Скрипт для наполнения данными БД*
 ```
@@ -1870,20 +1872,21 @@ sudo systemctl start postgresql
 Он поддерживает создание пользовательских БД и выполнение пользовательских запросов
 
 ```
-PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\create_db_scripts.sql ssh-rsa@158.160.123.33:/home/ssh-rsa
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\create_db_scripts.sql ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 create_db_scripts.sql                                                              100% 2168   110.2KB/s   00:00
-PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\olap_load_scripts.sql ssh-rsa@158.160.123.33:/home/ssh-rsa
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\olap_load_scripts.sql ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 olap_load_scripts.sql                                                              100% 1367    69.6KB/s   00:00
-PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql ssh-rsa@158.160.123.33:/home/ssh-rsa
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 oltp_load_scripts.sql                                                              100% 1629    78.0KB/s   00:00
 
-PS C:\Users\Egor> scp C:\Users\Egor\Downloads\pgslap_v1.0.0_linux_amd64\pgslap ssh-rsa@51.250.73.219:/home/ssh-rsa
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pgslap_v1.0.0_linux_amd64\pgslap ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 
 ssh-rsa@postgres1:~$ sudo chmod +x pgslap
+ssh-rsa@postgres1:~$ sudo pgslap -tags pgslap
 ssh-rsa@postgres1:~$ sudo -u postgres psql
 could not change directory to "/home/ssh-rsa": Permission denied
 psql (15.6 (Ubuntu 15.6-1.pgdg22.04+1))
@@ -1891,18 +1894,34 @@ Type "help" for help.
 
 postgres=# CREATE DATABASE contracts_test;
 CREATE DATABASE
+postgres=# \c contracts_test
+You are now connected to database "contracts_test" as user "postgres".
+contracts_test=# CREATE OR REPLACE FUNCTION random_between(low INT ,high INT)
+contracts_test-#    RETURNS INT AS
+contracts_test-# $$
+contracts_test$# BEGIN
+contracts_test$#    RETURN floor(random()* (high-low + 1) + low);
+contracts_test$# END;
+contracts_test$# $$ language 'plpgsql' STRICT;
+CREATE FUNCTION
+contracts_test=# CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as
+contracts_test-# $$
+contracts_test$#     SELECT string_agg(substring('0123456789bcdfghjkmnpqrstvwxyz', round(random() * 30)::integer, 1), '') FROM generate_series(1, $1);
+contracts_test$# $$ language sql;
+CREATE FUNCTION
+contracts_test=# \q
 ```
 
 Команда для генерации OLTP нагрузки:
 
 ```
-
+./pgslap -u 'postgres://postgres:postgres@<host>:5432/contracts_test' --create create_db_scripts.sql -q oltp_load_scripts.sql -n 45 --no-drop --t <time in seconds>
 ```
 
 Команда для генерации OLAP нагрузки:
 
 ```
-
+./pgslap -u 'postgres://postgres:postgres@<host>:5432/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t <time in seconds>
 ```
 
 Команда для генерации backup нагрузки:
