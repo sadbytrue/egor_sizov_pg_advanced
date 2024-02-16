@@ -1859,8 +1859,7 @@ FROM contracts GROUP BY uom_id;
 ```
 *5.6. Скрипт для backup БД*
 ```
-sudo -u postgres pg_basebackup --pgdata=/home/ssh-rsa/bc1 --host=<host> --port=<port> --username=postgres --password
-Password:
+
 ```
 *5.7. Скрипт для моделирования отказа интстанса*
 ```
@@ -1943,7 +1942,8 @@ contracts_test=# \q
 Команда для генерации backup нагрузки - bash скрипт
 
 ```
-
+sudo -u postgres pg_basebackup --pgdata=/home/ssh-rsa/bc1 --host=<host> --port=<port> --username=postgres --password
+Password:
 ```
 
 Команда для моделирования отказа инстансов - bash скрипт
