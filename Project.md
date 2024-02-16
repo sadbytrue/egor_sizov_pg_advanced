@@ -1859,7 +1859,22 @@ FROM contracts GROUP BY uom_id;
 ```
 *5.6. Скрипт для backup БД*
 ```
+#!/bin/bash
 
+# $1 --pgdata
+# $2 --connection string
+# $3 --time::integer, s - время выполнения
+# $4 --pereodic - переодичность бэкапирования
+
+for (( i = 0; i < $3; i += $4 ))
+do
+sleep $4
+backup_name=$1/backup_$(date +'%d_%m_%Y_%H_%M_%S')
+echo "[$(date +%d-%m-%Y-%H:%M:%S)] pg_basebackup $backup_name start"
+sudo -u postgres pg_basebackup --pgdata=$backup_name -d $2
+echo "[$(date +%d-%m-%Y-%H:%M:%S)] pg_basebackup $backup_name done"
+sudo rm -f $backup_name -r
+done
 ```
 *5.7. Скрипт для моделирования отказа интстанса*
 ```
@@ -1870,14 +1885,14 @@ FROM contracts GROUP BY uom_id;
 # $3 --postgres_stop::integer, продолжительность останова postgres в каждом цикле
 # $4 --offset::integer - смещение старта отсчета времени
 
-for (( i = $4; i < $1; i += $2 +$3 ))
 sleep $4
+for (( i = $4; i < $1; i += $2 +$3 ))
 do
 sleep $2
-sudo systemctl stop postgresql
+sudo systemctl stop patroni
 echo "[$(date +%d-%m-%Y-%H:%M:%S)] postgresql stopped"
 sleep $3
-sudo systemctl start postgresql
+sudo systemctl start patroni
 echo "[$(date +%d-%m-%Y-%H:%M:%S)] postgresql start"
 done
 
@@ -1894,7 +1909,7 @@ olap_load_scripts.sql                                                           
 PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql ssh-rsa@<host_n>:/home/ssh-rsa
 Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
 oltp_load_scripts.sql                                                              100% 1629    78.0KB/s   00:00
-PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_base_backup_new ssh-rsa@<host_n>:/home/ssh-rsa
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_base_backup.sh ssh-rsa@<host_n>:/home/ssh-rsa
 PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\create_db_scripts_null.sql ssh-rsa@158.160.115.35:/home/ssh-rsa
 PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_stop_patroni.sh ssh-rsa@158.160.62.255:/home/ssh-rsa
 
@@ -1942,13 +1957,13 @@ contracts_test=# \q
 Команда для генерации backup нагрузки - bash скрипт
 
 ```
-sudo -u postgres pg_basebackup --pgdata=/home/ssh-rsa/bc1 --host=<host> --port=<port> --username=postgres --password
-Password:
+sudo chmod +x pg_base_backup.sh
+./pg_base_backup.sh /var/lib/postgresql/15/main postgresql://postgres:postgres@localhost:5432 30 10
 ```
 
 Команда для моделирования отказа инстансов - bash скрипт
 
 ```
-sudo chmod +x pg_stop_patroni
+sudo chmod +x pg_stop_patroni.sh
 ./pg_stop_patroni.sh 120 30 30 0
 ```
