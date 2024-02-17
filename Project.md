@@ -83,23 +83,23 @@ runcmd: []
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для etcd в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
+PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
 ```
 
 ВМ 4 для proxy в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
+PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
 ```
 
 *2.2. Установка postgres, patroni, etcd и haproxy*
@@ -484,29 +484,29 @@ ssh-rsa@proxy:~$ sudo systemctl status haproxy
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для реплики postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
+PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
 ```
 
 ВМ 4 для etcd в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
+PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
 ```
 
 ВМ 5 для proxy в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
+PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
 ```
 
 *3.2. Установка postgres, patroni, etcd и haproxy*
@@ -1013,35 +1013,35 @@ ssh-rsa@proxy:~$ sudo systemctl status haproxy
 ВМ 1 для postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
+PS C:\Windows\system32> yc compute instance create --name postgres1 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres1
 ```
 
 ВМ 2 для postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
+PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres2
 ```
 
 ВМ 3 для реплики postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
+PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
 ```
 
 ВМ 4 для реплики postgres в географической зоне 2
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres4 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres4
+PS C:\Windows\system32> yc compute instance create --name postgres4 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 --memory 12G --cores 2 --zone ru-central1-b --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres4
 ```
 
 ВМ 5 для etcd в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
+PS C:\Windows\system32> yc compute instance create --name etcd --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname etcd
 ```
 
 ВМ 6 для proxy в географической зоне 1
 ```
-PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
+PS C:\Windows\system32> yc compute instance create --name proxy --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 4G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname proxy
 ```
 
 *4.2. Установка postgres, patroni, etcd и haproxy*
@@ -1987,7 +1987,7 @@ sudo chmod +x pg_stop_patroni.sh
 
 *6.1.Виртуальная машина для запуска тестирования*
 ```
-PS C:\Windows\system32> yc compute instance create --name test --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=8,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname test
+PS C:\Windows\system32> yc compute instance create --name test --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=8,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname test
 PS C:\Users\Egor> ssh ssh-rsa@178.154.203.151
 ssh-rsa@test:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
 ssh-rsa@test:~$ sudo systemctl stop postgresql
