@@ -1692,7 +1692,8 @@ BEGIN
 END;
 $$ language 'plpgsql' STRICT;
 
-CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as $$
+CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as
+$$
     SELECT string_agg(substring('0123456789bcdfghjkmnpqrstvwxyz', round(random() * 30)::integer, 1), '') FROM generate_series(1, $1);
 $$ language sql;
 ```
@@ -1978,4 +1979,174 @@ sudo chmod +x pg_base_backup.sh
 ```
 sudo chmod +x pg_stop_patroni.sh
 ./pg_stop_patroni.sh 120 30 30 0
+```
+
+# 6.Тестирование
+
+БАЗОВАЯ АРХИТЕКТУРА
+
+*6.1.Виртуальная машина для запуска тестирования*
+```
+PS C:\Windows\system32> yc compute instance create --name test --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=8,auto-delete=true --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 8G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname test
+PS C:\Users\Egor> ssh ssh-rsa@178.154.203.151
+ssh-rsa@test:~$ sudo apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -q && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt -y install postgresql-15
+ssh-rsa@test:~$ sudo systemctl stop postgresql
+```
+*6.2.Создание тестовой БД*
+```
+ssh-rsa@test:~$ psql -h 178.154.202.169 -p 5000 -U postgres
+Password for user postgres:
+postgres=# CREATE DATABASE contracts_test;
+CREATE DATABASE
+postgres=# \c contracts_test
+You are now connected to database "contracts_test" as user "postgres".
+
+contracts_test=# CREATE OR REPLACE FUNCTION random_between(low INT ,high INT)
+contracts_test-#    RETURNS INT AS
+contracts_test-# $$
+contracts_test$# BEGIN
+contracts_test$#    RETURN floor(random()* (high-low + 1) + low);
+contracts_test$# END;
+contracts_test$# $$ language 'plpgsql' STRICT;
+CREATE FUNCTION
+contracts_test=# CREATE OR REPLACE FUNCTION random_string( int ) RETURNS TEXT as
+contracts_test-# $$
+  SEcontracts_test$#     SELECT string_agg(substring('0123456789bcdfghjkmnpqrstvwxyz', round(random() * 30)::integer, 1), '') FROM generate_series(1, $1);
+contracts_test$# $$ language sql;
+CREATE FUNCTION
+contracts_test=# CREATE TABLE phones (
+contracts_test(# id serial PRIMARY KEY,
+contracts_test(# value integer);
+CREATE TABLE
+contracts_test=# CREATE TABLE goods (
+contracts_test(# id serial PRIMARY KEY,
+contracts_test(# name text);
+CREATE TABLE
+contracts_test=# CREATE TABLE uoms
+contracts_test-# (id serial PRIMARY KEY,
+contracts_test(# name text);
+CREATE TABLE
+contracts_test=# CREATE TABLE customers (
+contracts_test(# id serial PRIMARY KEY,
+contracts_test(# name text,
+contracts_test(# surname text,
+contracts_test(# phone_id integer REFERENCES phones (id)
+contracts_test(# );
+CREATE TABLE
+contracts_test=# CREATE TABLE suppliers (
+contracts_test(# id serial PRIMARY KEY,
+contracts_test(# name text,
+contracts_test(# surname text,
+contracts_test(# phone_id integer REFERENCES phones (id)
+contracts_test(# );
+CREATE TABLE
+contracts_test=# CREATE TABLE contracts (
+contracts_test(# id serial PRIMARY KEY,
+contracts_test(# supplier_id integer REFERENCES suppliers (id),
+contracts_test(# customer_id integer REFERENCES customers (id),
+contracts_test(# good_id integer REFERENCES goods (id),
+contracts_test(# quantity integer,
+contracts_test(# uom_id integer REFERENCES uoms (id)
+contracts_test(# );
+CREATE TABLE
+
+contracts_test=# INSERT INTO phones (id, value)
+contracts_test-# SELECT
+contracts_test-# generate_series,
+contracts_test-# random_between(100000000,999999999)
+contracts_test-# FROM generate_series(1,2000000);
+INSERT 0 2000000
+contracts_test=# INSERT INTO goods (id, name)
+contracts_test-# SELECT
+contracts_test-# generate_series,
+contracts_test-# random_string(10)
+contracts_test-# FROM generate_series(1,100000);
+INSERT 0 100000
+contracts_test=# INSERT INTO uoms (id, name)
+contracts_test-# SELECT
+contracts_test-# generate_series,
+contracts_test-# random_string(5)
+contracts_test-# FROM generate_series(1,10000);
+INSERT 0 10000
+contracts_test=# INSERT INTO customers (id, name, surname, phone_id)
+_series,
+contracts_test-# SELECT
+andocontracts_test-# generate_series,
+contracts_test-# random_string(10),
+contracts_test-# random_string(10),
+contracts_test-# random_between(1,1000000)
+contracts_test-# FROM generate_series(1,1000000);
+INSERT 0 1000000
+contracts_test=# INSERT INTO suppliers (id, name, surname, phone_id)
+contracts_test-# SELECT
+contracts_test-# generate_series,
+contracts_test-# random_string(10),
+contracts_test-# random_string(10),
+contracts_test-# random_between(1,1000000)
+contracts_test-# FROM generate_series(1,1000000);
+INSERT 0 1000000
+contracts_test=# INSERT INTO contracts (id, supplier_id, customer_id, good_id, quantity, uom_id)
+contracts_test-# SELECT
+contracts_test-# generate_series,
+contracts_test-# random_between(1,1000000),
+contracts_test-# random_between(1,1000000),
+contracts_test-# random_between(1,100000),
+contracts_test-# random_between(1,1000000)::numeric/1000::numeric,
+contracts_test-# random_between(1,10000)
+contracts_test-# FROM generate_series(1,10000000);
+INSERT 0 10000000
+```
+*6.3.Копирование скриптов для тестирования*
+```
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\create_db_scripts_null.sql ssh-rsa@178.154.203.151:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+create_db_scripts_null.sql                                                         100%    0     0.0KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\olap_load_scripts.sql ssh-rsa@178.154.203.151:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+olap_load_scripts.sql                                                              100% 1367    74.0KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\oltp_load_scripts.sql ssh-rsa@178.154.203.151:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+oltp_load_scripts.sql                                                              100% 1629    80.2KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pgslap_v1.0.0_linux_amd64/pgslap ssh-rsa@178.154.203.151:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+pgslap
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_base_backup.sh ssh-rsa@178.154.203.151:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+pg_base_backup.sh                                                                  100%  506    24.5KB/s   00:00
+
+
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_stop_patroni.sh ssh-rsa@158.160.38.176:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+pg_base_backup.sh                                                                  100%  506    24.5KB/s   00:00
+PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\pg_stop_patroni.sh ssh-rsa@158.160.83.222:/home/ssh-rsa
+Enter passphrase for key 'C:\Users\Egor/.ssh/id_ed25519':
+pg_base_backup.sh                                                                  100%  506    24.5KB/s   00:00
+
+ssh-rsa@test:~$ sudo chmod +x pg_base_backup.sh
+ssh-rsa@test:~$ sudo chmod +x pgslap
+
+ssh-rsa@postgres1:~$ sudo chmod +x pg_stop_patroni.sh
+ssh-rsa@postgres2:~$ sudo chmod +x pg_stop_patroni.sh
+```
+*6.4.Подготовка к запуску тестирования*
+
+Каждый инструмент в отдельном подключении ssh запускать!!!
+
+```
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/contracts_test' --create create_db_scripts_null.sql -q oltp_load_scripts.sql -n 45 --no-drop --t 3600
+```
+
+```
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t 3600
+```
+
+```
+ssh-rsa@test:~$ ./pg_base_backup.sh /var/lib/postgresql/15/main postgresql://postgres:postgres@178.154.202.169:5000 3600 900
+```
+
+```
+ssh-rsa@postgres1:~$ ./pg_stop_patroni.sh 3600 900 300 0
+```
+```
+ssh-rsa@postgres2:~$ ./pg_stop_patroni.sh 3600 900 300 600
 ```
