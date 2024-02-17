@@ -284,6 +284,12 @@ postgresql:
       password: postgres
   parameters:
       unix_socket_directories: '.'
+      shared_buffers = 3GB
+      effective_cache_size = 9GB
+      maintenance_work_mem = 768MB
+      work_mem = 15728kB
+      min_wal_size = 2GB
+      max_wal_size = 8GB
 
 tags:
     nofailover: false
@@ -375,6 +381,12 @@ postgresql:
       password: postgres
   parameters:
       unix_socket_directories: '.'
+      shared_buffers = 3GB
+      effective_cache_size = 9GB
+      maintenance_work_mem = 768MB
+      work_mem = 15728kB
+      min_wal_size = 2GB
+      max_wal_size = 8GB
 
 tags:
     nofailover: false
