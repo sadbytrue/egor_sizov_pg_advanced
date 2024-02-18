@@ -2162,3 +2162,28 @@ ssh-rsa@postgres1:~$ ./pg_stop_patroni.sh 3600 900 300 0
 ```
 ssh-rsa@postgres2:~$ ./pg_stop_patroni.sh 3600 900 300 600
 ```
+*6.5.Результаты тестирования*
+
+OLTP
+
+```
+
+```
+
+OLAP
+
+```
+
+```
+
+Backup
+
+```
+
+```
+
+Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
+Итого:
+avg_qps OLTP = 
+avg_qps OLAP = 
+backup_time = 
