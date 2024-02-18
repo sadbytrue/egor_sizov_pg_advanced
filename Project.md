@@ -1,7 +1,7 @@
 # 0.Материалы проекта
 *0.1. Презентация*
 
-https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Project_Presentation.pptx
+[https://github.com/sadbytrue/egor_sizov_pg_advanced/blob/main/Project_Presentation.pptx](https://drive.google.com/drive/folders/1pfLuS-XtkILex4kYIXjDpQ0qy9zH6kjd?usp=sharing)
 
 *0.2. Базовая архитектура*
 
