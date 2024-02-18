@@ -1926,6 +1926,8 @@ done
 
 Инструментом для тестирования выбран https://github.com/winebarrel/pgslap
 Он поддерживает создание пользовательских БД и выполнение пользовательских запросов
+Скрипты в папке:
+https://github.com/sadbytrue/egor_sizov_pg_advanced/tree/main/scripts_for_testing
 
 ```
 PS C:\Users\Egor> scp C:\Users\Egor\Documents\project_otus\olap_load_scripts.sql ssh-rsa@<host_n>:/home/ssh-rsa
