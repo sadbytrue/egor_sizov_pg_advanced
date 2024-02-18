@@ -2359,13 +2359,11 @@ Backup
 [18-02-2024-10:29:11] pg_basebackup /home/ssh-rsa/backup_18_02_2024_10_15_57 done
 ```
 
-Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
-
 Итого:
 
-avg_qps OLTP = 56
+avg_qps OLTP = 3.111
 
-avg_qps OLAP = 0.167
+avg_qps OLAP = 0.033
 
 avg_backup_time = 1471 s
 
