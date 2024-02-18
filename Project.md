@@ -508,7 +508,7 @@ PS C:\Windows\system32> yc compute instance create --name postgres2 --create-boo
 ВМ 3 для реплики postgres в географической зоне 1
 
 ```
-PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=64,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 32G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
+PS C:\Windows\system32> yc compute instance create --name postgres3 --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,size=32,auto-delete=true,type=network-ssd --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 --memory 32G --cores 2 --zone ru-central1-a --metadata-from-file user-data=C:\Users\Egor\user_data.yaml  --hostname postgres3
 ```
 
 ВМ 4 для etcd в географической зоне 1
@@ -1010,7 +1010,7 @@ listen postgres
 ssh-rsa@proxy:~$ ssh-rsa@proxy:~$ sudo systemctl restart haproxy
 ssh-rsa@proxy:~$ sudo systemctl status haproxy
 ```
-# 4.Архитектура с отдельными репликами для OLAP и backup в каждой географиеческой зоне
+# 4.Архитектура с отдельными репликами для OLAP и backup
 | Host | Internal IP | Public IP |
 | ------ | ------ | ------ |
 | postgres1 |  |  |
