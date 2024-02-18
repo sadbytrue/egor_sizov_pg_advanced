@@ -2169,23 +2169,198 @@ ssh-rsa@postgres2:~$ ./pg_stop_patroni.sh 3600 900 300 600
 OLTP
 
 ```
-
+{
+  "URL": "postgres://postgres:postgres@158.160.109.0:5000/contracts_test",
+  "StartedAt": "2024-02-18T09:34:36.56396228Z",
+  "FinishedAt": "2024-02-18T10:34:36.568097538Z",
+  "ElapsedTime": 3600,
+  "NAgents": 45,
+  "Rate": 0,
+  "AutoGenerateSql": false,
+  "NumberPrePopulatedData": 100,
+  "NumberQueriesToExecute": 0,
+  "DropExistingDatabase": false,
+  "UseExistingDatabase": true,
+  "NoDropDatabase": true,
+  "LoadType": "mixed",
+  "GuidPrimary": false,
+  "NumberSecondaryIndexes": 0,
+  "CommitRate": 0,
+  "MixedSelRatio": 1,
+  "MixedInsRatio": 1,
+  "NumberIntCols": 1,
+  "IntColsIndex": false,
+  "NumberCharCols": 1,
+  "CharColsIndex": false,
+  "PreQueries": null,
+  "GOMAXPROCS": 2,
+  "QueryCount": 11200,
+  "AvgQPS": 3.1111075374345987,
+  "MaxQPS": 243,
+  "MinQPS": 1,
+  "MedianQPS": 1,
+  "ExpectedQPS": 0,
+  "Response": {
+    "Time": {
+      "Cumulative": "44h32m32.265642035s",
+      "HMean": "371.853µs",
+      "Avg": "14.317166575s",
+      "P50": "60.357609ms",
+      "P75": "7.603990059s",
+      "P95": "1m5.867670626s",
+      "P99": "1m13.240376236s",
+      "P999": "1m17.616541398s",
+      "Long5p": "1m10.225410519s",
+      "Short5p": "1.118718ms",
+      "Max": "1m19.49518576s",
+      "Min": "500ns",
+      "Range": "1m19.49518526s",
+      "StdDev": "24.951578086s"
+    },
+    "Rate": {
+      "Second": 0.06984622234775593
+    },
+    "Samples": 11200,
+    "Count": 11200,
+    "Histogram": [
+      {
+        "0s - 7.949519s": 8573
+      },
+      {
+        "7.949519s - 15.899037s": 136
+      },
+      {
+        "15.899037s - 23.848556s": 2
+      },
+      {
+        "23.848556s - 31.798074s": 1
+      },
+      {
+        "31.798074s - 39.747593s": 1
+      },
+      {
+        "39.747593s - 47.697111s": 5
+      },
+      {
+        "47.697111s - 55.64663s": 591
+      },
+      {
+        "55.64663s - 1m3.596148s": 1176
+      },
+      {
+        "1m3.596148s - 1m11.545667s": 539
+      },
+      {
+        "1m11.545667s - 1m19.495185s": 176
+      }
+    ]
+  }
+}
 ```
 
 OLAP
 
 ```
-
+{
+  "URL": "postgres://postgres:postgres@158.160.109.0:5000/contracts_test",
+  "StartedAt": "2024-02-18T09:34:49.889052432Z",
+  "FinishedAt": "2024-02-18T10:34:49.894219834Z",
+  "ElapsedTime": 3600,
+  "NAgents": 45,
+  "Rate": 0,
+  "AutoGenerateSql": false,
+  "NumberPrePopulatedData": 100,
+  "NumberQueriesToExecute": 0,
+  "DropExistingDatabase": false,
+  "UseExistingDatabase": true,
+  "NoDropDatabase": true,
+  "LoadType": "mixed",
+  "GuidPrimary": false,
+  "NumberSecondaryIndexes": 0,
+  "CommitRate": 0,
+  "MixedSelRatio": 1,
+  "MixedInsRatio": 1,
+  "NumberIntCols": 1,
+  "IntColsIndex": false,
+  "NumberCharCols": 1,
+  "CharColsIndex": false,
+  "PreQueries": null,
+  "GOMAXPROCS": 2,
+  "QueryCount": 120,
+  "AvgQPS": 0.033333285487003865,
+  "MaxQPS": 1,
+  "MinQPS": 1,
+  "MedianQPS": 1,
+  "ExpectedQPS": 0,
+  "Response": {
+    "Time": {
+      "Cumulative": "39h34m48.314042398s",
+      "HMean": "4.048µs",
+      "Avg": "19m47.402617019s",
+      "P50": "12m43.562417702s",
+      "P75": "38m47.756983556s",
+      "P95": "40m29.773423817s",
+      "P99": "41m21.03933404s",
+      "P999": "41m22.839902993s",
+      "Long5p": "40m56.02672116s",
+      "Short5p": "611ns",
+      "Max": "41m22.839902993s",
+      "Min": "544ns",
+      "Range": "41m22.839902449s",
+      "StdDev": "15m48.24288236s"
+    },
+    "Rate": {
+      "Second": 0.0008421743271121413
+    },
+    "Samples": 120,
+    "Count": 120,
+    "Histogram": [
+      {
+        "0s - 4m8.28399s": 24
+      },
+      {
+        "4m8.28399s - 8m16.567981s": 1
+      },
+      {
+        "8m16.567981s - 12m24.851971s": 9
+      },
+      {
+        "12m24.851971s - 16m33.135961s": 41
+      },
+      {
+        "16m33.135961s - 20m41.419951s": 1
+      },
+      {
+        "20m41.419951s - 24m49.703942s": 1
+      },
+      {
+        "24m49.703942s - 28m57.987932s": 1
+      },
+      {
+        "28m57.987932s - 33m6.271922s": 1
+      },
+      {
+        "33m6.271922s - 37m14.555912s": 1
+      },
+      {
+        "37m14.555912s - 41m22.839902s": 40
+      }
+    ]
+  }
+}
 ```
 
 Backup
 
 ```
-
+[18-02-2024-09:49:40] pg_basebackup /home/ssh-rsa/backup_18_02_2024_09_49_40 start
+[18-02-2024-10:00:57] pg_basebackup /home/ssh-rsa/backup_18_02_2024_09_49_40 done
+[18-02-2024-10:15:57] pg_basebackup /home/ssh-rsa/backup_18_02_2024_10_15_57 start
+[18-02-2024-10:29:11] pg_basebackup /home/ssh-rsa/backup_18_02_2024_10_15_57 done
 ```
 
 Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
 Итого:
-avg_qps OLTP = 
-avg_qps OLAP = 
-backup_time = 
+avg_qps OLTP = 56
+avg_qps OLAP = 0.167
+avg_backup_time = 1471 s
