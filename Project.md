@@ -2360,9 +2360,13 @@ Backup
 ```
 
 Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
+
 Итого:
+
 avg_qps OLTP = 56
+
 avg_qps OLAP = 0.167
+
 avg_backup_time = 1471 s
 
 
@@ -2411,9 +2415,13 @@ Backup
 ```
 
 Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
+
 Итого:
+
 avg_qps OLTP = 
+
 avg_qps OLAP = 
+
 avg_backup_time = 
 
 
@@ -2462,7 +2470,11 @@ Backup
 ```
 
 Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
+
 Итого:
-avg_qps OLTP = 
+
+avg_qps OLTP =
+
 avg_qps OLAP = 
+
 avg_backup_time = 
