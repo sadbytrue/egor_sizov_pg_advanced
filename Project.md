@@ -1886,7 +1886,7 @@ FROM contracts GROUP BY uom_id;
 ```
 #!/bin/bash
 
-# $1 --pgdata
+# $1 --root directory
 # $2 --connection string
 # $3 --time::integer, s - время выполнения
 # $4 --pereodic - переодичность бэкапирования
@@ -1896,7 +1896,7 @@ do
 sleep $4
 backup_name=$1/backup_$(date +'%d_%m_%Y_%H_%M_%S')
 echo "[$(date +%d-%m-%Y-%H:%M:%S)] pg_basebackup $backup_name start"
-sudo -u postgres pg_basebackup --pgdata=$backup_name -d $2
+pg_dump --dbname=$2 --format=directory --file=$backup_name
 echo "[$(date +%d-%m-%Y-%H:%M:%S)] pg_basebackup $backup_name done"
 sudo rm -f $backup_name -r
 done
@@ -2153,7 +2153,7 @@ ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/c
 ```
 
 ```
-ssh-rsa@test:~$ ./pg_base_backup.sh /var/lib/postgresql/15/main postgresql://postgres:postgres@178.154.202.169:5000 3600 900
+ssh-rsa@test:~$ ./pg_base_backup.sh /home/ssh-rsa postgresql://postgres:postgres@178.154.202.169:5000/contracts_test 3600 900
 ```
 
 ```
