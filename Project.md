@@ -2364,3 +2364,54 @@ Backup
 avg_qps OLTP = 56
 avg_qps OLAP = 0.167
 avg_backup_time = 1471 s
+
+
+АРХИТЕКТУРА С ОТДЕЛЬНОЙ РЕПЛИКОЙ для OLAP+backup
+
+*6.6.Подготовка к запуску тестирования*
+
+Каждый инструмент в отдельном подключении ssh запускать!!!
+
+```
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/contracts_test' --create create_db_scripts_null.sql -q oltp_load_scripts.sql -n 45 --no-drop --t 3600
+```
+
+```
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t 3600
+```
+
+```
+ssh-rsa@test:~$ ./pg_base_backup.sh /home/ssh-rsa postgresql://postgres:postgres@178.154.202.169:5000/contracts_test 3600 900
+```
+
+```
+ssh-rsa@postgres1:~$ ./pg_stop_patroni.sh 3600 900 300 0
+```
+```
+ssh-rsa@postgres2:~$ ./pg_stop_patroni.sh 3600 900 300 600
+```
+*6.7.Результаты тестирования*
+
+OLTP
+
+```
+
+```
+
+OLAP
+
+```
+
+```
+
+Backup
+
+```
+
+```
+
+Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
+Итого:
+avg_qps OLTP = 
+avg_qps OLAP = 
+avg_backup_time = 
