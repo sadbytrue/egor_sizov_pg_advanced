@@ -2377,11 +2377,11 @@ ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/c
 ```
 
 ```
-ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t 3600
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@158.160.0.28:5432/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t 3600
 ```
 
 ```
-ssh-rsa@test:~$ ./pg_base_backup.sh /home/ssh-rsa postgresql://postgres:postgres@178.154.202.169:5000/contracts_test 3600 900
+ssh-rsa@test:~$ ./pg_base_backup.sh /home/ssh-rsa postgresql://postgres:postgres@158.160.0.28:5432/contracts_test 3600 900
 ```
 
 ```
@@ -2391,6 +2391,57 @@ ssh-rsa@postgres1:~$ ./pg_stop_patroni.sh 3600 900 300 0
 ssh-rsa@postgres2:~$ ./pg_stop_patroni.sh 3600 900 300 600
 ```
 *6.7.Результаты тестирования*
+
+OLTP
+
+```
+
+```
+
+OLAP
+
+```
+
+```
+
+Backup
+
+```
+
+```
+
+Пересчет в tps: в каждой query для OLTP нагрузки 18 транзакций, для OLAP - 5 транзакций
+Итого:
+avg_qps OLTP = 
+avg_qps OLAP = 
+avg_backup_time = 
+
+
+АРХИТЕКТУРА С ОТДЕЛЬНЫМИ РЕПЛИКАМИ для OLAP и backup
+
+*6.8.Подготовка к запуску тестирования*
+
+Каждый инструмент в отдельном подключении ssh запускать!!!
+
+```
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@178.154.202.169:5000/contracts_test' --create create_db_scripts_null.sql -q oltp_load_scripts.sql -n 45 --no-drop --t 3600
+```
+
+```
+ssh-rsa@test:~$ ./pgslap -u 'postgres://postgres:postgres@158.160.0.28:5432/contracts_test' --create create_db_scripts_null.sql -q olap_load_scripts.sql -n 45 --no-drop --t 3600
+```
+
+```
+ssh-rsa@test:~$ ./pg_base_backup.sh /home/ssh-rsa postgresql://@158.160.41.105:5432/contracts_test 3600 900
+```
+
+```
+ssh-rsa@postgres1:~$ ./pg_stop_patroni.sh 3600 900 300 0
+```
+```
+ssh-rsa@postgres2:~$ ./pg_stop_patroni.sh 3600 900 300 600
+```
+*6.9.Результаты тестирования*
 
 OLTP
 
